@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Muxicos - Aprende Música Regional</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+
+<body class="bg-[#0f1115] text-white font-display">
+  <div class="flex min-h-screen">
+    <aside class="w-64 bg-[#1a1d22] border-r border-[#2a2d33] p-6">
+      <h1 class="text-2xl font-bold text-orange-500 mb-6">Muxicos</h1>
+      <nav class="flex flex-col space-y-2">
+        <a href="index.html" class="nav-item-active"><span class="material-icons-outlined">home</span>Inicio</a>
+        <a href="video.html" class="nav-item"><span class="material-icons-outlined">library_books</span>Cursos</a>
+        <a href="#" class="nav-item"><span class="material-icons-outlined">star</span>Favoritos</a>
+      </nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+      <header class="mb-8">
+        <h2 class="text-3xl font-bold text-white">Bienvenido a Muxicos</h2>
+        <p class="text-gray-400">Aprende música regional mexicana con los mejores maestros.</p>
+      </header>
+
+      <section class="mb-8">
+        <h3 class="text-2xl font-semibold mb-4">Nuevos cursos</h3>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-[#1a1d22] p-4 rounded-xl hover:bg-[#2a2d33] cursor-pointer">
+            <h4 class="font-semibold">Norteño Guitar Foundations</h4>
+            <p class="text-sm text-gray-400">por Luis Hernández</p>
+          </div>
+          <div class="bg-[#1a1d22] p-4 rounded-xl hover:bg-[#2a2d33] cursor-pointer">
+            <h4 class="font-semibold">Polkas en Acordeón</h4>
+            <p class="text-sm text-gray-400">por Paco M.</p>
+          </div>
+          <div class="bg-[#1a1d22] p-4 rounded-xl hover:bg-[#2a2d33] cursor-pointer">
+            <h4 class="font-semibold">Cantos del Norte</h4>
+            <p class="text-sm text-gray-400">por Sofía R.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
