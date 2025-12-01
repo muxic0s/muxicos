@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Muxicos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos base suaves para transiciones de color */
+        body { transition: background-color 0.3s, color 0.3s; }
+        .theme-card { transition: background-color 0.3s, border-color 0.3s; }
+    </style>
+</head>
+<!-- INICIO: Definimos las clases por defecto (Modo Oscuro) -->
+<body id="cuerpo" class="bg-[#050505] text-white font-sans antialiased selection:bg-green-500 selection:text-black">
+
+    <!-- NAVBAR LIMPIO -->
+    <nav class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+        <!-- Logo Corregido (Icono SVG) -->
+        <div class="text-xl font-bold flex items-center gap-2 select-none">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+            <span>Muxicos</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Botón de Tema (Oscuro/Claro) -->
+            <button id="themeToggle" class="hidden md:flex bg-[#1E1E1E] hover:bg-[#2A2A2A] transition rounded-full px-4 py-2 text-xs text-gray-300 gap-2 items-center border border-transparent">
+                <span id="themeIcon">🌙</span> 
+                <span id="themeText">Oscuro</span>
+            </button>
+
+            <!-- ÚNICO BOTÓN DE LOGIN (Arriba a la derecha) -->
+            <a href="/login.html" class="text-sm font-bold hover:opacity-75 transition">
+                Iniciar sesión
+            </a>
+        </div>
+    </nav>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 space-y-8 pb-20">
+
+        <!-- 1. HERO SECTION -->
+        <!-- 'theme-card' indica que este bloque cambiará de color -->
+        <section class="theme-card bg-[#121212] rounded-[2rem] p-8 md:p-12 border border-gray-800 relative overflow-hidden flex flex-col md:flex-row items-center gap-12">
+            
+            <div class="flex-1 z-10 space-y-6">
+                <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">Plataforma de aprendizaje</span>
+                <h1 class="text-4xl md:text-5xl font-bold leading-tight">
+                    Muxicos<br>
+                    <span class="text-gray-400 theme-text-secondary">Aprende música regional mexicana con los expertos.</span>
+                </h1>
+                <p class="text-gray-400 theme-text-secondary text-sm max-w-lg leading-relaxed">
+                    Explora técnicas, estilos y repertorios con clases guiadas, desde nivel inicial hasta profesional.
+                </p>
+
+                <!-- ÚNICO BOTÓN DE REGISTRO (CTA PRINCIPAL) -->
+                <div class="pt-2">
+                    <a href="/registro.html" class="bg-white text-black hover:bg-gray-200 font-bold px-8 py-4 rounded-full text-sm transition inline-block shadow-lg hover:shadow-xl hover:-translate-y-1 transform">
+                        Crear cuenta gratis
+                    </a>
+                </div>
+
+                <div class="text-[10px] text-gray-500 space-y-1 pt-4">
+                    <p>✓ Cursos de guitarra, acordeón, tololoche y más.</p>
+                    <p>✓ Cancela en cualquier momento.</p>
+                </div>
+            </div>
+
+            <!-- Imagen Hero -->
+            <div class="flex-1 w-full max-w-md relative">
+                <div class="aspect-square rounded-2xl overflow-hidden shadow-2xl relative">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1550985616-1081025f72da?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-90 hover:scale-105 transition duration-700">
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. SECCIÓN INFO -->
+        <section class="theme-card bg-[#121212] rounded-[2rem] p-8 md:p-12 border border-gray-800">
+            <div class="flex justify-between items-start mb-8">
+                <h2 class="text-2xl font-bold">¿Qué es Muxicos?</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-sm mb-2">Nuestro propósito</h3>
+                    <p class="text-gray-500 theme-text-secondary text-xs leading-relaxed">Conectar a estudiantes de todo el mundo con maestros especializados en regional mexicano.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm mb-2">Tu progreso, siempre contigo</h3>
+                    <p class="text-gray-500 theme-text-secondary text-xs leading-relaxed">Guarda tus cursos, retoma lecciones donde las dejaste y sigue tu ruta personalizada.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SECCIÓN NIVELES -->
+        <section class="theme-card bg-[#121212] rounded-[2rem] p-8 md:p-12 border border-gray-800">
+            <h2 class="text-2xl font-bold mb-8">Para todos los niveles</h2>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="space-y-3">
+                    <h3 class="font-bold">Principiantes</h3>
+                    <p class="text-gray-500 theme-text-secondary text-xs">Empieza desde cero con cursos introductorios.</p>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="font-bold">Intermedios</h3>
+                    <p class="text-gray-500 theme-text-secondary text-xs">Perfecciona tu ejecución y amplía tu repertorio.</p>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="font-bold">Avanzados</h3>
+                    <p class="text-gray-500 theme-text-secondary text-xs">Domina la improvisación y el estilo profesional.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER SIMPLE -->
+    <footer class="max-w-7xl mx-auto px-6 pb-12 text-[10px] text-gray-500 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-800 pt-8 theme-border">
+        <div class="flex gap-4">
+            <a href="#" class="hover:text-current">Términos</a>
+            <a href="#" class="hover:text-current">Privacidad</a>
+            <a href="#" class="hover:text-current">Soporte</a>
+        </div>
+        <div>© 2025 Muxicos.</div>
+    </footer>
+
+    <!-- LOGICA DE CAMBIO DE TEMA (JAVASCRIPT) -->
+    <script>
+        const themeBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        const body = document.getElementById('cuerpo');
+        
+        // Elementos que cambian
+        const cards = document.querySelectorAll('.theme-card');
+        const secondaryTexts = document.querySelectorAll('.theme-text-secondary');
+        
+        let isDark = true;
+
+        themeBtn.addEventListener('click', () => {
+            isDark = !isDark;
+
+            if (isDark) {
+                // MODO OSCURO (Activar)
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Oscuro';
+                
+                // Cuerpo
+                body.classList.remove('bg-gray-50', 'text-gray-900');
+                body.classList.add('bg-[#050505]', 'text-white');
+                
+                // Botón
+                themeBtn.classList.add('bg-[#1E1E1E]', 'text-gray-300');
+                themeBtn.classList.remove('bg-white', 'text-black', 'shadow-sm', 'border-gray-300');
+
+                // Tarjetas
+                cards.forEach(card => {
+                    card.classList.remove('bg-white', 'border-gray-200', 'shadow-xl');
+                    card.classList.add('bg-[#121212]', 'border-gray-800');
+                });
+
+                // Textos secundarios
+                secondaryTexts.forEach(text => {
+                    text.classList.remove('text-gray-600');
+                    text.classList.add('text-gray-400');
+                });
+
+            } else {
+                // MODO CLARO (Activar)
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Claro';
+
+                // Cuerpo
+                body.classList.remove('bg-[#050505]', 'text-white');
+                body.classList.add('bg-gray-50', 'text-gray-900');
+
+                // Botón
+                themeBtn.classList.remove('bg-[#1E1E1E]', 'text-gray-300');
+                themeBtn.classList.add('bg-white', 'text-black', 'shadow-sm', 'border-gray-300');
+
+                // Tarjetas
+                cards.forEach(card => {
+                    card.classList.remove('bg-[#121212]', 'border-gray-800');
+                    card.classList.add('bg-white', 'border-gray-200', 'shadow-xl');
+                });
+
+                 // Textos secundarios
+                 secondaryTexts.forEach(text => {
+                    text.classList.remove('text-gray-400');
+                    text.classList.add('text-gray-600');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

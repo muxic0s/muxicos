@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muxicos - Registro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#121212] text-white font-sans min-h-screen flex">
+
+    <aside class="w-64 bg-black hidden md:flex flex-col p-6 border-r border-gray-800">
+        <h1 class="text-2xl font-bold mb-8">Muxicos</h1>
+        <div class="text-gray-500 text-sm">
+            <p class="mb-4">Únete a la comunidad más grande de música regional mexicana.</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex items-center justify-center p-6">
+        <div class="w-full max-w-2xl bg-[#181818] p-8 rounded-xl border border-gray-800 shadow-2xl">
+            <h2 class="text-2xl font-bold mb-2">Crear cuenta</h2>
+            <p class="text-gray-400 text-sm mb-6">Regístrate en Muxicos para aprender música regional mexicana.</p>
+
+            <form class="space-y-5" action="/registrar-usuario" method="POST">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Nombre</label>
+                        <input type="text" name="nombre" placeholder="Tu nombre" required 
+                               class="w-full bg-[#0a0a0a] border border-gray-700 rounded p-3 text-sm focus:border-white outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Apellido</label>
+                        <input type="text" name="apellido" placeholder="Tu apellido" 
+                               class="w-full bg-[#0a0a0a] border border-gray-700 rounded p-3 text-sm focus:border-white outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Correo electrónico</label>
+                    <input type="email" name="email" placeholder="tu@correo.com" required 
+                           class="w-full bg-[#0a0a0a] border border-gray-700 rounded p-3 text-sm focus:border-white outline-none transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Contraseña</label>
+                        <input type="password" name="password" placeholder="••••••••" required 
+                               class="w-full bg-[#0a0a0a] border border-gray-700 rounded p-3 text-sm focus:border-white outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Confirmar contraseña</label>
+                        <input type="password" name="confirm_password" placeholder="••••••••" required 
+                               class="w-full bg-[#0a0a0a] border border-gray-700 rounded p-3 text-sm focus:border-white outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                     <label class="block text-sm font-medium mb-3">¿Qué instrumento deseas aprender?</label>
+                    <div class="relative">
+                        <select name="instrumento" class="block w-full appearance-none bg-[#0a0a0a] border border-gray-700 hover:border-white text-white py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline transition cursor-pointer">
+                            <option value="ninguno">Ninguno (Solo quiero explorar)</option>
+                            <option value="guitarra">Guitarra (Sierreño/Campirano)</option>
+                            <option value="acordeon">Acordeón (Norteño)</option>
+                            <option value="tololoche">Tololoche (Bajo)</option>
+                            <option value="bajo_sexto">Bajo Sexto/Quinto</option>
+                            <option value="trompeta">Trompeta (Banda/Mariachi)</option>
+                            <option value="voz">Voz / Canto</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                     </div>
+                </div>
+
+                <div class="pt-4 space-y-3">
+                    <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded hover:bg-gray-200 transition">
+                        Registrarse
+                    </button>
+                    
+                    <a href="login.html" class="block w-full bg-[#2A2A2A] text-white font-bold py-3 rounded hover:bg-[#3A3A3A] transition text-center">
+                        Ya tengo una cuenta
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

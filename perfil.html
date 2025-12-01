@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muxicos - Mi Perfil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#121212] text-white font-sans min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-black hidden lg:flex flex-col p-6 border-r border-gray-800 space-y-8">
+        <h1 class="text-2xl font-bold">Muxicos</h1>
+        <nav class="space-y-2 text-gray-400 text-sm font-medium">
+             <a href="/" class="flex items-center gap-3 hover:text-white p-2 rounded transition"><span>🏠</span> Home</a>
+             <a href="#" class="flex items-center gap-3 hover:text-white p-2 rounded transition"><span>📚</span> Cursos</a>
+             <a href="/perfil" class="flex items-center gap-3 text-white bg-[#282828] p-2 rounded transition"><span>👤</span> Perfil</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        
+        <!-- Header Section -->
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="text-3xl font-bold mb-1">Perfil de usuario</h2>
+                <p class="text-gray-400 text-sm">Gestiona tus datos, cursos y actividad dentro de Muxicos.</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="/logout" class="bg-[#2A2A2A] hover:bg-[#3A3A3A] px-4 py-2 rounded text-sm font-bold transition">Cerrar sesión</a>
+                <button class="bg-white text-black hover:bg-gray-200 px-4 py-2 rounded text-sm font-bold transition">Editar perfil</button>
+            </div>
+        </div>
+
+        <!-- GRID LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Columna Izquierda: Tarjeta de Usuario -->
+            <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 h-fit">
+                <div class="flex items-center gap-4 mb-6">
+                    <!-- Avatar Genérico (Placeholder Gris) -->
+                    <div class="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden border-2 border-green-500">
+                        <svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <!-- DATOS DINÁMICOS -->
+                        <h3 class="text-xl font-bold">{{ user.nombre }} {{ user.apellido }}</h3>
+                        <p class="text-gray-400 text-sm">@{{ user.username }}</p>
+                        <div class="flex items-center gap-1 mt-1">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span class="text-xs text-green-500 font-bold uppercase">En línea</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-sm mb-6">
+                    <div class="flex justify-between py-2 border-b border-gray-800">
+                        <span class="text-gray-400">Correo</span>
+                        <span class="font-medium text-right truncate w-32">{{ user.email }}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-800">
+                        <span class="text-gray-400">Miembro desde</span>
+                        <span class="font-medium">Dic 2025</span> <!-- Podríamos hacerlo dinámico con datetime -->
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-800">
+                        <span class="text-gray-400">Instrumento principal</span>
+                        <span class="font-bold text-white capitalize">{{ user.instrumento }}</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <button class="w-full bg-[#2A2A2A] hover:bg-[#3A3A3A] py-3 rounded flex justify-between px-4 text-sm font-medium transition group">
+                        <span>Configurar perfil</span>
+                        <span class="text-gray-500 group-hover:text-white">></span>
+                    </button>
+                    <button class="w-full bg-[#2A2A2A] hover:bg-[#3A3A3A] py-3 rounded flex justify-between px-4 text-sm font-medium transition group">
+                        <span>Cambiar contraseña</span>
+                        <span class="text-gray-500 group-hover:text-white">></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Stats y Cursos (VACÍOS PARA NUEVO USUARIO) -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Stats Row: Todo en CERO -->
+                <div class="bg-[#181818] p-6 rounded-xl border border-gray-800">
+                    <h4 class="text-gray-200 font-bold mb-4">Resumen de aprendizaje</h4>
+                    <div class="grid grid-cols-3 gap-4 divide-x divide-gray-700">
+                        <div class="px-2">
+                            <p class="text-gray-400 text-xs mb-1">Cursos completados</p>
+                            <p class="text-2xl font-bold">0</p>
+                            <p class="text-gray-500 text-[10px]">Últimos 12 meses</p>
+                        </div>
+                        <div class="px-4">
+                            <p class="text-gray-400 text-xs mb-1">Cursos activos</p>
+                            <p class="text-2xl font-bold">0</p>
+                            <p class="text-gray-500 text-[10px]">En progreso</p>
+                        </div>
+                        <div class="px-4">
+                            <p class="text-gray-400 text-xs mb-1">Minutos estudiados</p>
+                            <p class="text-2xl font-bold">0</p>
+                            <p class="text-gray-500 text-[10px]">Total histórico</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado Vacío de Cursos -->
+                <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 min-h-[200px] flex flex-col justify-center items-center text-center">
+                    <div class="bg-[#222] p-4 rounded-full mb-4">
+                        <span class="text-3xl">🎸</span>
+                    </div>
+                    <h5 class="font-bold text-lg mb-2">Aún no tienes cursos</h5>
+                    <p class="text-gray-400 text-sm max-w-xs mb-4">¡Comienza tu aprendizaje hoy! Explora nuestra biblioteca de música regional.</p>
+                    <a href="/" class="bg-white text-black font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition">Explorar cursos</a>
+                </div>
+
+                 <!-- Config Footer -->
+                 <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 space-y-4">
+                    <h4 class="text-gray-200 font-bold text-sm mb-2">Configuración del perfil</h4>
+                    
+                    <div class="flex justify-between items-center text-sm py-2">
+                        <div class="flex items-center gap-3">
+                            <span>🛡️</span>
+                            <div>
+                                <p class="font-medium">Privacidad</p>
+                                <p class="text-xs text-gray-500">Controla qué información muestras.</p>
+                            </div>
+                        </div>
+                        <span class="text-gray-400 text-xs">Amigos</span>
+                    </div>
+
+                    <div class="flex justify-between items-center text-sm py-2">
+                        <div class="flex items-center gap-3">
+                            <span>🎵</span>
+                            <div>
+                                <p class="font-medium">Instrumentos de interés</p>
+                                <p class="text-xs text-gray-500">Actualiza lo que deseas aprender.</p>
+                            </div>
+                        </div>
+                        <span class="text-gray-400 text-xs capitalize">{{ user.instrumento }}</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</body>
+</html>

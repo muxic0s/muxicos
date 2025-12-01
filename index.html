@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muxicos - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Personalización para ocultar scrollbar pero permitir scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-black flex flex-col p-6 space-y-8 flex-shrink-0">
+        <h1 class="text-2xl font-bold tracking-tight">Muxicos</h1>
+        
+        <nav class="space-y-4 text-gray-400 text-sm font-medium">
+            <div class="space-y-2">
+                <input type="text" placeholder="Buscar cursos..." class="w-full bg-[#2A2A2A] text-white p-2 rounded text-xs focus:outline-none">
+            </div>
+
+            <div class="pt-4 space-y-1">
+                <a href="/" class="flex items-center gap-3 text-white bg-[#282828] p-2 rounded hover:bg-[#282828] transition">
+                    <span>🏠</span> Home
+                </a>
+                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">
+                    <span>📚</span> Cursos
+                </a>
+                <a href="/perfil" class="flex items-center gap-3 hover:text-white p-2 transition">
+                    <span>👤</span> Perfil
+                </a>
+                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">
+                    <span>👥</span> Maestros
+                </a>
+            </div>
+
+            <div class="pt-4">
+                <h3 class="uppercase text-xs font-bold text-gray-500 mb-2">Biblioteca</h3>
+                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">🎸 Guitarra</a>
+                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">🎹 Acordeón</a>
+                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">🎻 Tololoche</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 no-scrollbar relative">
+        
+        <!-- HEADER INTELIGENTE -->
+        <header class="flex justify-between items-center mb-6">
+            <div class="flex gap-2">
+                <button class="bg-black/50 p-2 rounded-full rounded-l hover:bg-black transition">ᐸ</button>
+                <button class="bg-black/50 p-2 rounded-full rounded-r hover:bg-black transition">ᐳ</button>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- LÓGICA JINJA2: Verificamos si existe 'usuario' -->
+                {% if usuario %}
+                    <!-- ESTADO LOGUEADO: Muestra Avatar y Nombre -->
+                    <a href="/perfil" class="flex items-center gap-3 hover:bg-[#282828] p-1 pr-4 rounded-full transition group">
+                        <!-- Círculo con la inicial del nombre -->
+                        <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-xs border border-white group-hover:scale-105 transition">
+                            {{ usuario.nombre[0] | upper }} 
+                        </div>
+                        <span class="text-sm font-bold text-white hidden sm:block group-hover:text-green-400 transition">{{ usuario.nombre }}</span>
+                    </a>
+                    <!-- Botón de Salir -->
+                    <a href="/logout" class="text-xs text-gray-400 hover:text-white transition border border-gray-700 px-2 py-1 rounded" title="Cerrar sesión">Salir</a>
+                {% else %}
+                    <!-- ESTADO VISITANTE: Muestra botones originales -->
+                    <a href="login.html" class="text-sm font-bold text-gray-300 hover:text-white">Log in</a>
+                    <a href="registro.html" class="text-sm font-bold bg-white text-black px-4 py-2 rounded-full hover:scale-105 transition">Sign up</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Hero Banner -->
+        <div class="relative w-full h-80 bg-gradient-to-r from-red-900 to-black rounded-lg mb-10 overflow-hidden flex items-end p-8">
+            <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549834125-824b47d83d10?q=80&w=2938&auto=format&fit=crop')] bg-cover bg-center opacity-40"></div>
+            
+            <div class="relative z-10 max-w-xl">
+                <span class="text-xs font-bold uppercase tracking-wider mb-2 block">Curso Destacado</span>
+                <h2 class="text-5xl font-black mb-4">Norteño Guitar Foundations</h2>
+                <p class="text-gray-300 mb-6 text-sm">Aprende los rasgueos clásicos, bajos y progresiones con el Maestro Luis.</p>
+                <div class="flex gap-4">
+                    <a href="detalle.html" class="bg-white text-black font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition">Comenzar</a>
+                    <button class="bg-gray-800/80 text-white font-bold py-3 px-8 rounded-full hover:bg-gray-700 transition">Añadir a lista</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: New Courses -->
+        <section class="mb-10">
+            <h3 class="text-xl font-bold mb-4">Nuevos Cursos</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group">
+                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=500&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                    <h4 class="font-bold mb-1">Ritmos de Guitarra</h4>
+                    <p class="text-xs text-gray-400">Por Ana López • 10 lecciones</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group">
+                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1627832811394-b2586e376043?w=500&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                    <h4 class="font-bold mb-1">Acordeón Esencial</h4>
+                    <p class="text-xs text-gray-400">Por Paco M. • 8 lecciones</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group">
+                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1575672288126-5b9101895a63?w=500&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                    <h4 class="font-bold mb-1">Tololoche Grooves</h4>
+                    <p class="text-xs text-gray-400">Por Sofía Reyes • 9 lecciones</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group">
+                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1516280440614-6697288d5d38?w=500&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                    <h4 class="font-bold mb-1">Vocalización</h4>
+                    <p class="text-xs text-gray-400">Por Diego Cruz • 6 lecciones</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
