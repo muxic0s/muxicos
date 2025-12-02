@@ -6,139 +6,185 @@
     <title>Bienvenido a Muxicos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilos base suaves para transiciones de color */
-        body { transition: background-color 0.3s, color 0.3s; }
-        .theme-card { transition: background-color 0.3s, border-color 0.3s; }
+        /* Transiciones suaves para todo cambio de color */
+        body, .theme-card, a, p, span, h1, h2, h3, button { 
+            transition: all 0.3s ease; 
+        }
+        
+        /* Fondo con luz sutil */
+        .glow-bg {
+            background: radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.15), transparent 40%);
+        }
+
+        /* Estilos base de tarjetas oscuras */
+        .theme-card { 
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+        .theme-card:hover {
+            border-color: rgba(34, 197, 94, 0.3);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
-<!-- INICIO: Definimos las clases por defecto (Modo Oscuro) -->
-<body id="cuerpo" class="bg-[#050505] text-white font-sans antialiased selection:bg-green-500 selection:text-black">
+<!-- ID cuerpo para cambiar clases globales -->
+<body id="cuerpo" class="bg-[#050505] text-white font-sans antialiased selection:bg-green-500 selection:text-black glow-bg min-h-screen">
 
-    <!-- NAVBAR LIMPIO -->
-    <nav class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
-        <!-- Logo Corregido (Icono SVG) -->
-        <div class="text-xl font-bold flex items-center gap-2 select-none">
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                <path d="M9 18V5l12-2v13"></path>
-                <circle cx="6" cy="18" r="3"></circle>
-                <circle cx="18" cy="16" r="3"></circle>
-            </svg>
-            <span>Muxicos</span>
+    <!-- NAVBAR -->
+    <nav class="w-full max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-50">
+        <!-- Logo -->
+        <div class="text-2xl font-bold flex items-center gap-3 select-none tracking-tight">
+            <div class="bg-green-500 text-black p-1.5 rounded-lg">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            </div>
+            <!-- Texto del logo que cambiará de color -->
+            <span class="theme-text-main">Muxicos</span>
         </div>
 
-        <div class="flex items-center gap-4">
-            <!-- Botón de Tema (Oscuro/Claro) -->
-            <button id="themeToggle" class="hidden md:flex bg-[#1E1E1E] hover:bg-[#2A2A2A] transition rounded-full px-4 py-2 text-xs text-gray-300 gap-2 items-center border border-transparent">
+        <div class="flex items-center gap-6">
+            <!-- Botón Tema -->
+            <button id="themeToggle" class="hidden md:flex bg-[#1E1E1E]/50 hover:bg-[#2A2A2A] backdrop-blur-md transition rounded-full px-4 py-2 text-xs text-gray-300 gap-2 items-center border border-white/10">
                 <span id="themeIcon">🌙</span> 
                 <span id="themeText">Oscuro</span>
             </button>
 
-            <!-- ÚNICO BOTÓN DE LOGIN (Arriba a la derecha) -->
-            <a href="/login.html" class="text-sm font-bold hover:opacity-75 transition">
+            <!-- Login -->
+            <a href="/login.html" class="theme-nav-link text-sm font-bold text-gray-400 hover:text-white transition">
                 Iniciar sesión
             </a>
         </div>
     </nav>
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 space-y-8 pb-20">
+    <!-- MAIN -->
+    <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 space-y-16 pb-20 relative z-10">
 
-        <!-- 1. HERO SECTION -->
-        <!-- 'theme-card' indica que este bloque cambiará de color -->
-        <section class="theme-card bg-[#121212] rounded-[2rem] p-8 md:p-12 border border-gray-800 relative overflow-hidden flex flex-col md:flex-row items-center gap-12">
+        <!-- HERO SECTION -->
+        <section class="theme-card rounded-[2.5rem] p-8 md:p-16 relative overflow-hidden flex flex-col-reverse md:flex-row items-center gap-12 group">
             
-            <div class="flex-1 z-10 space-y-6">
-                <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">Plataforma de aprendizaje</span>
-                <h1 class="text-4xl md:text-5xl font-bold leading-tight">
-                    Muxicos<br>
-                    <span class="text-gray-400 theme-text-secondary">Aprende música regional mexicana con los expertos.</span>
+            <div class="flex-1 z-10 space-y-8 text-center md:text-left">
+                <div class="inline-block px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-bold uppercase tracking-widest mb-2">
+                    La nueva forma de aprender
+                </div>
+                
+                <h1 class="text-4xl md:text-6xl font-black leading-tight tracking-tight theme-text-main">
+                    Domina la música<br>
+                    <span class="theme-text-secondary text-gray-500">regional mexicana.</span>
                 </h1>
-                <p class="text-gray-400 theme-text-secondary text-sm max-w-lg leading-relaxed">
-                    Explora técnicas, estilos y repertorios con clases guiadas, desde nivel inicial hasta profesional.
+                
+                <p class="theme-text-desc text-gray-400 text-sm md:text-base max-w-lg leading-relaxed mx-auto md:mx-0">
+                    Únete a miles de estudiantes y accede a cursos exclusivos de guitarra, acordeón y más, impartidos por los mejores maestros.
                 </p>
 
-                <!-- ÚNICO BOTÓN DE REGISTRO (CTA PRINCIPAL) -->
-                <div class="pt-2">
-                    <a href="/registro.html" class="bg-white text-black hover:bg-gray-200 font-bold px-8 py-4 rounded-full text-sm transition inline-block shadow-lg hover:shadow-xl hover:-translate-y-1 transform">
-                        Crear cuenta gratis
+                <div class="flex flex-col sm:flex-row gap-4 pt-4 justify-center md:justify-start">
+                    <a href="/registro.html" class="bg-green-600 text-white hover:bg-green-500 font-bold px-8 py-4 rounded-full text-sm transition shadow-lg hover:shadow-green-500/20 transform hover:-translate-y-1">
+                        Empieza gratis
+                    </a>
+                    <a href="/cursos" id="btnExplore" class="px-8 py-4 rounded-full text-sm font-bold text-gray-300 border border-white/10 hover:bg-white/5 transition flex items-center justify-center gap-2">
+                        <span>Explorar cursos</span>
+                        <span>→</span>
                     </a>
                 </div>
 
-                <div class="text-[10px] text-gray-500 space-y-1 pt-4">
-                    <p>✓ Cursos de guitarra, acordeón, tololoche y más.</p>
-                    <p>✓ Cancela en cualquier momento.</p>
+                <div class="flex items-center justify-center md:justify-start gap-6 pt-4 opacity-70">
+                    <div class="flex -space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-gray-600 border-2 border-[#121212] theme-avatar-border"></div>
+                        <div class="w-8 h-8 rounded-full bg-gray-500 border-2 border-[#121212] theme-avatar-border"></div>
+                        <div class="w-8 h-8 rounded-full bg-gray-400 border-2 border-[#121212] theme-avatar-border"></div>
+                    </div>
+                    <p class="theme-text-desc text-[10px] text-gray-500">+1.2k estudiantes activos</p>
                 </div>
             </div>
 
             <!-- Imagen Hero -->
             <div class="flex-1 w-full max-w-md relative">
-                <div class="aspect-square rounded-2xl overflow-hidden shadow-2xl relative">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
-                    <img src="https://images.unsplash.com/photo-1550985616-1081025f72da?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-90 hover:scale-105 transition duration-700">
+                <div class="absolute -inset-4 bg-green-500/20 blur-3xl rounded-full opacity-50 group-hover:opacity-75 transition duration-1000"></div>
+                
+                <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 rotate-3 hover:rotate-0 transition duration-700 ease-out theme-img-border">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+                    <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop" 
+                         class="w-full h-full object-cover transform scale-110 group-hover:scale-100 transition duration-1000">
                 </div>
             </div>
         </section>
 
-        <!-- 2. SECCIÓN INFO -->
-        <section class="theme-card bg-[#121212] rounded-[2rem] p-8 md:p-12 border border-gray-800">
-            <div class="flex justify-between items-start mb-8">
-                <h2 class="text-2xl font-bold">¿Qué es Muxicos?</h2>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="font-bold text-sm mb-2">Nuestro propósito</h3>
-                    <p class="text-gray-500 theme-text-secondary text-xs leading-relaxed">Conectar a estudiantes de todo el mundo con maestros especializados en regional mexicano.</p>
-                </div>
-                <div>
-                    <h3 class="font-bold text-sm mb-2">Tu progreso, siempre contigo</h3>
-                    <p class="text-gray-500 theme-text-secondary text-xs leading-relaxed">Guarda tus cursos, retoma lecciones donde las dejaste y sigue tu ruta personalizada.</p>
-                </div>
-            </div>
-        </section>
+        <!-- INFO GRID -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <section class="theme-card rounded-3xl p-8 md:p-10">
+                <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-2xl mb-6">🎯</div>
+                <h2 class="text-xl font-bold mb-3 theme-text-main">Nuestro propósito</h2>
+                <p class="theme-text-desc text-gray-400 text-sm leading-relaxed">
+                    Democratizar el acceso a la educación musical de calidad, conectando a maestros rurales y urbanos con estudiantes.
+                </p>
+            </section>
 
-        <!-- 3. SECCIÓN NIVELES -->
-        <section class="theme-card bg-[#121212] rounded-[2rem] p-8 md:p-12 border border-gray-800">
-            <h2 class="text-2xl font-bold mb-8">Para todos los niveles</h2>
+            <section class="theme-card rounded-3xl p-8 md:p-10">
+                <div class="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-2xl mb-6">📱</div>
+                <h2 class="text-xl font-bold mb-3 theme-text-main">Aprende donde sea</h2>
+                <p class="theme-text-desc text-gray-400 text-sm leading-relaxed">
+                    Tu progreso se sincroniza en la nube. Empieza en tu laptop y repasa en tu celular camino al ensayo.
+                </p>
+            </section>
+        </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="space-y-3">
-                    <h3 class="font-bold">Principiantes</h3>
-                    <p class="text-gray-500 theme-text-secondary text-xs">Empieza desde cero con cursos introductorios.</p>
+        <!-- NIVELES -->
+        <section class="space-y-8">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold theme-text-main">Un camino para cada músico</h2>
+                <p class="theme-text-desc text-gray-500 text-sm mt-2">Desde tu primer acorde hasta el escenario.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Tarjeta 1 -->
+                <div class="theme-card rounded-3xl p-8 hover:bg-[#1E1E1E] transition cursor-default group/card">
+                    <span class="text-green-500 text-xs font-bold uppercase tracking-wider">Nivel 1</span>
+                    <h3 class="font-bold text-lg mt-2 mb-3 theme-text-main group-hover/card:text-white">Principiantes</h3>
+                    <p class="theme-text-desc text-gray-500 text-xs leading-relaxed">Nunca has tocado un instrumento. Aprende postura y notas básicas.</p>
                 </div>
-                <div class="space-y-3">
-                    <h3 class="font-bold">Intermedios</h3>
-                    <p class="text-gray-500 theme-text-secondary text-xs">Perfecciona tu ejecución y amplía tu repertorio.</p>
+                <!-- Tarjeta 2 -->
+                <div class="theme-card rounded-3xl p-8 hover:bg-[#1E1E1E] transition cursor-default group/card">
+                    <span class="text-yellow-500 text-xs font-bold uppercase tracking-wider">Nivel 2</span>
+                    <h3 class="font-bold text-lg mt-2 mb-3 theme-text-main group-hover/card:text-white">Intermedios</h3>
+                    <p class="theme-text-desc text-gray-500 text-xs leading-relaxed">Ya tocas pero quieres mejorar. Domina escalas y ritmo.</p>
                 </div>
-                <div class="space-y-3">
-                    <h3 class="font-bold">Avanzados</h3>
-                    <p class="text-gray-500 theme-text-secondary text-xs">Domina la improvisación y el estilo profesional.</p>
+                <!-- Tarjeta 3 -->
+                <div class="theme-card rounded-3xl p-8 hover:bg-[#1E1E1E] transition cursor-default group/card">
+                    <span class="text-red-500 text-xs font-bold uppercase tracking-wider">Nivel 3</span>
+                    <h3 class="font-bold text-lg mt-2 mb-3 theme-text-main group-hover/card:text-white">Avanzados</h3>
+                    <p class="theme-text-desc text-gray-500 text-xs leading-relaxed">Perfecciona tu estilo, improvisación y teoría compleja.</p>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- FOOTER SIMPLE -->
-    <footer class="max-w-7xl mx-auto px-6 pb-12 text-[10px] text-gray-500 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-gray-800 pt-8 theme-border">
-        <div class="flex gap-4">
-            <a href="#" class="hover:text-current">Términos</a>
-            <a href="#" class="hover:text-current">Privacidad</a>
-            <a href="#" class="hover:text-current">Soporte</a>
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 py-12 theme-footer">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-gray-500 theme-text-desc">
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-green-500 transition">Términos</a>
+                <a href="#" class="hover:text-green-500 transition">Privacidad</a>
+                <a href="#" class="hover:text-green-500 transition">Ayuda</a>
+            </div>
+            <div>© 2025 Muxicos Inc.</div>
         </div>
-        <div>© 2025 Muxicos.</div>
     </footer>
 
-    <!-- LOGICA DE CAMBIO DE TEMA (JAVASCRIPT) -->
+    <!-- LOGICA DE TEMA ROBUSTA -->
     <script>
         const themeBtn = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const themeText = document.getElementById('themeText');
         const body = document.getElementById('cuerpo');
-        
-        // Elementos que cambian
         const cards = document.querySelectorAll('.theme-card');
-        const secondaryTexts = document.querySelectorAll('.theme-text-secondary');
+        const mainTexts = document.querySelectorAll('.theme-text-main');
+        const secTexts = document.querySelectorAll('.theme-text-secondary');
+        const descTexts = document.querySelectorAll('.theme-text-desc');
+        const navLink = document.querySelector('.theme-nav-link');
+        const btnExplore = document.getElementById('btnExplore');
+        const avatarBorders = document.querySelectorAll('.theme-avatar-border');
+        const imgBorder = document.querySelector('.theme-img-border');
+        const footer = document.querySelector('.theme-footer');
         
         let isDark = true;
 
@@ -146,54 +192,84 @@
             isDark = !isDark;
 
             if (isDark) {
-                // MODO OSCURO (Activar)
+                // --- MODO OSCURO ---
                 themeIcon.textContent = '🌙';
                 themeText.textContent = 'Oscuro';
                 
-                // Cuerpo
+                // Fondo Body
                 body.classList.remove('bg-gray-50', 'text-gray-900');
                 body.classList.add('bg-[#050505]', 'text-white');
                 
-                // Botón
-                themeBtn.classList.add('bg-[#1E1E1E]', 'text-gray-300');
-                themeBtn.classList.remove('bg-white', 'text-black', 'shadow-sm', 'border-gray-300');
+                // Botón Tema
+                themeBtn.classList.add('bg-[#1E1E1E]/50', 'text-gray-300', 'border-white/10');
+                themeBtn.classList.remove('bg-white', 'text-black', 'shadow-md', 'border-gray-200');
+
+                // Botón Explorar
+                btnExplore.classList.remove('text-gray-600', 'border-gray-300', 'hover:bg-gray-100');
+                btnExplore.classList.add('text-gray-300', 'border-white/10', 'hover:bg-white/5');
 
                 // Tarjetas
                 cards.forEach(card => {
-                    card.classList.remove('bg-white', 'border-gray-200', 'shadow-xl');
-                    card.classList.add('bg-[#121212]', 'border-gray-800');
+                    card.style.background = 'linear-gradient(145deg, #1a1a1a, #0f0f0f)';
+                    card.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                    card.style.boxShadow = '0 10px 30px -10px rgba(0, 0, 0, 0.5)';
                 });
 
-                // Textos secundarios
-                secondaryTexts.forEach(text => {
-                    text.classList.remove('text-gray-600');
-                    text.classList.add('text-gray-400');
-                });
+                // Textos
+                mainTexts.forEach(t => t.classList.remove('text-gray-900')); // Default white
+                secTexts.forEach(t => { t.classList.remove('text-gray-600'); t.classList.add('text-gray-500'); });
+                descTexts.forEach(t => { t.classList.remove('text-gray-600'); t.classList.add('text-gray-400'); });
+
+                // Navbar Link
+                navLink.classList.remove('text-gray-600', 'hover:text-black');
+                navLink.classList.add('text-gray-400', 'hover:text-white');
+
+                // Bordes Avatar
+                avatarBorders.forEach(b => b.classList.replace('border-white', 'border-[#121212]'));
+                
+                // Footer
+                footer.classList.remove('bg-gray-100', 'border-gray-200');
+                footer.classList.add('bg-[#0a0a0a]', 'border-white/10');
 
             } else {
-                // MODO CLARO (Activar)
+                // --- MODO CLARO ---
                 themeIcon.textContent = '☀️';
                 themeText.textContent = 'Claro';
 
-                // Cuerpo
+                // Fondo Body
                 body.classList.remove('bg-[#050505]', 'text-white');
                 body.classList.add('bg-gray-50', 'text-gray-900');
 
-                // Botón
-                themeBtn.classList.remove('bg-[#1E1E1E]', 'text-gray-300');
-                themeBtn.classList.add('bg-white', 'text-black', 'shadow-sm', 'border-gray-300');
+                // Botón Tema
+                themeBtn.classList.remove('bg-[#1E1E1E]/50', 'text-gray-300', 'border-white/10');
+                themeBtn.classList.add('bg-white', 'text-black', 'shadow-md', 'border-gray-200');
 
-                // Tarjetas
+                // Botón Explorar (Mejor contraste)
+                btnExplore.classList.remove('text-gray-300', 'border-white/10', 'hover:bg-white/5');
+                btnExplore.classList.add('text-gray-600', 'border-gray-300', 'hover:bg-gray-100');
+
+                // Tarjetas (Blanco puro con sombra para resaltar)
                 cards.forEach(card => {
-                    card.classList.remove('bg-[#121212]', 'border-gray-800');
-                    card.classList.add('bg-white', 'border-gray-200', 'shadow-xl');
+                    card.style.background = 'white';
+                    card.style.borderColor = '#e5e7eb'; // Gris suave
+                    card.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
                 });
 
-                 // Textos secundarios
-                 secondaryTexts.forEach(text => {
-                    text.classList.remove('text-gray-400');
-                    text.classList.add('text-gray-600');
-                });
+                // Textos (Oscuros para leer bien)
+                mainTexts.forEach(t => t.classList.add('text-gray-900'));
+                secTexts.forEach(t => { t.classList.remove('text-gray-500'); t.classList.add('text-gray-600'); });
+                descTexts.forEach(t => { t.classList.remove('text-gray-400'); t.classList.add('text-gray-600'); });
+
+                // Navbar Link (Negro al hover)
+                navLink.classList.remove('text-gray-400', 'hover:text-white');
+                navLink.classList.add('text-gray-600', 'hover:text-black');
+
+                // Bordes Avatar
+                avatarBorders.forEach(b => b.classList.replace('border-[#121212]', 'border-white'));
+
+                // Footer
+                footer.classList.remove('bg-[#0a0a0a]', 'border-white/10');
+                footer.classList.add('bg-gray-100', 'border-gray-200');
             }
         });
     </script>

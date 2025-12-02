@@ -13,16 +13,20 @@
         /* Animaciones para Modales */
         .modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
         .modal-content { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform: scale(0.95); }
-        
         .modal.active { opacity: 1; visibility: visible; }
         .modal.active .modal-content { transform: scale(1); }
-        
         .modal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        /* Estilos de Validación */
+        .check-valid { color: #4ade80; /* Green-400 */ }
+        .check-invalid { color: #6b7280; /* Gray-500 */ }
+        .check-icon-valid { background-color: #4ade80; }
+        .check-icon-invalid { background-color: #6b7280; }
     </style>
 </head>
 <body class="bg-[#121212] text-white font-sans min-h-screen flex overflow-hidden">
 
-    <!-- SIDEBAR RETRÁCTIL -->
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-black flex flex-col p-4 space-y-8 flex-shrink-0 border-r border-gray-800 transition-all duration-300 ease-in-out">
         <div class="flex items-center justify-between h-10">
             <div class="flex items-center gap-2 overflow-hidden whitespace-nowrap">
@@ -62,7 +66,7 @@
         </nav>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 p-8 overflow-y-auto w-full no-scrollbar relative">
         
         <!-- HEADER -->
@@ -71,7 +75,6 @@
                 <h2 class="text-3xl font-bold mb-1">Perfil de usuario</h2>
                 <p class="text-gray-400 text-sm">Gestiona tus datos y actividad.</p>
                 
-                <!-- Mensajes Flash (Éxito/Error al actualizar) -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -87,9 +90,13 @@
             <!-- DROPDOWN -->
             <div class="relative flex-shrink-0">
                 <button id="userMenuBtn" class="flex items-center gap-2 hover:bg-[#282828] p-1 pr-3 rounded-full transition group focus:outline-none">
-                    <div class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-sm border-2 border-transparent group-hover:border-white transition">
-                        {{ user.nombre[0] | upper }} 
-                    </div>
+                    {% if user.foto_url %}
+                        <div class="w-9 h-9 rounded-full bg-cover bg-center border-2 border-transparent group-hover:border-white transition" style="background-image: url('{{ user.foto_url }}');"></div>
+                    {% else %}
+                        <div class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-sm border-2 border-transparent group-hover:border-white transition">
+                            {{ user.nombre[0] | upper }} 
+                        </div>
+                    {% endif %}
                     <svg class="w-3 h-3 text-gray-400 transition-transform duration-200" id="userMenuArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
                 <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1E1E1E] rounded-xl shadow-xl border border-gray-800 overflow-hidden z-50 transform origin-top-right transition-all">
@@ -108,19 +115,25 @@
             </div>
         </div>
 
-        <!-- GRID DE INFORMACIÓN -->
+        <!-- GRID -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             <!-- TARJETA IZQUIERDA -->
             <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 h-fit">
                 <div class="flex items-center gap-4 mb-6">
-                    <div class="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-green-500 text-2xl font-bold text-white shadow-lg relative group cursor-pointer">
-                        {{ user.nombre[0] | upper }}
-                        <!-- Overlay de "Editar Foto" (Visual) -->
-                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                            <span class="text-[10px]">📷</span>
+                    <!-- AVATAR -->
+                    <div onclick="openModal('configModal')" class="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-green-500 shadow-lg relative group cursor-pointer bg-cover bg-center"
+                         style="background-image: url('{{ user.foto_url }}');">
+                        
+                        {% if not user.foto_url %}
+                            <span class="text-3xl font-bold text-white">{{ user.nombre[0] | upper }}</span>
+                        {% endif %}
+                        
+                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                            <span class="text-xs font-bold text-white">Editar</span>
                         </div>
                     </div>
+
                     <div>
                         <h3 class="text-xl font-bold text-white">{{ user.nombre }} {{ user.apellido }}</h3>
                         <p class="text-gray-400 text-sm">@{{ user.username }}</p>
@@ -134,7 +147,7 @@
                 <div class="space-y-4 text-sm mb-6">
                     <div class="flex justify-between py-2 border-b border-gray-800">
                         <span class="text-gray-400">Correo</span>
-                        <span class="font-medium text-right truncate w-32 text-gray-300" title="{{ user.email }}">{{ user.email }}</span>
+                        <span class="font-medium text-right truncate w-32 text-gray-300">{{ user.email }}</span>
                     </div>
                     <div class="flex justify-between py-2 border-b border-gray-800">
                         <span class="text-gray-400">Teléfono</span>
@@ -147,7 +160,6 @@
                 </div>
                 
                 <div class="space-y-2">
-                    <!-- BOTÓN PRINCIPAL DE CONFIGURACIÓN -->
                     <button onclick="openModal('configModal')" class="w-full bg-[#2A2A2A] hover:bg-[#3A3A3A] py-3 rounded flex justify-between px-4 text-sm font-medium transition group text-gray-300 border border-transparent hover:border-gray-600">
                         <span>Configurar perfil</span>
                         <span class="text-gray-500 group-hover:text-white">⚙️</span>
@@ -155,77 +167,99 @@
                 </div>
             </div>
 
-            <!-- CONTENIDO DERECHA (Stats y Cursos) -->
+            <!-- DERECHA -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- Estado Vacío -->
                 <div class="bg-[#181818] p-8 rounded-xl border border-gray-800 min-h-[250px] flex flex-col justify-center items-center text-center">
                     <div class="bg-[#222] p-4 rounded-full mb-4 shadow-inner">
                         <span class="text-4xl">🎸</span>
                     </div>
-                    <h5 class="font-bold text-xl mb-2 text-white">Tu viaje musical</h5>
+                    <h5 class="font-bold text-xl mb-2 text-white">Tu viaje musical comienza aquí</h5>
                     <p class="text-gray-400 text-sm max-w-sm mb-6 leading-relaxed">
-                        Aquí verás tu progreso. Por ahora, explora los cursos disponibles y empieza a aprender.
+                        Explora los cursos disponibles y empieza a aprender hoy mismo.
                     </p>
                     <a href="/cursos" class="bg-white text-black font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition transform hover:scale-105 shadow-lg text-sm">
                         Explorar cursos
                     </a>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-[#181818] p-4 rounded-xl border border-gray-800">
-                        <h4 class="text-gray-400 text-xs uppercase font-bold mb-2">Nivel Actual</h4>
-                        <p class="text-2xl font-bold text-white">Principiante</p>
-                    </div>
-                    <div class="bg-[#181818] p-4 rounded-xl border border-gray-800">
-                        <h4 class="text-gray-400 text-xs uppercase font-bold mb-2">Racha de estudio</h4>
-                        <p class="text-2xl font-bold text-white">0 días</p>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- MODAL 1: CONFIGURACIÓN DE PERFIL -->
-    <!-- ========================================== -->
-    <div id="configModal" class="modal hidden-modal fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="modal-content bg-[#1E1E1E] w-full max-w-md rounded-2xl border border-gray-700 shadow-2xl overflow-hidden">
+    <!-- MODAL 1: CONFIGURACIÓN (Corregido: overflow-hidden agregado) -->
+    <div id="configModal" class="modal hidden-modal fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
+        <!-- AQUÍ ESTÁ EL FIX: overflow-hidden para respetar las curvas -->
+        <div class="modal-content bg-[#1E1E1E] w-full max-w-lg rounded-2xl border border-gray-700 shadow-2xl my-auto overflow-hidden">
             
             <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-[#252525]">
                 <h3 class="text-lg font-bold text-white">Editar Perfil</h3>
                 <button onclick="closeModal('configModal')" class="text-gray-400 hover:text-white text-xl">✕</button>
             </div>
             
-            <form action="/actualizar-perfil" method="POST" class="p-6 space-y-4">
+            <form action="/actualizar-perfil" method="POST" id="profileForm" class="p-6 space-y-5">
+                
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Foto de Perfil (URL)</label>
+                    <input type="text" name="foto_url" value="{{ user.foto_url }}" placeholder="https://..." class="w-full bg-black border border-gray-600 rounded p-2.5 text-xs text-green-400 font-mono focus:border-green-500 outline-none transition">
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Nombre</label>
-                        <input type="text" name="nombre" value="{{ user.nombre }}" class="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                        <input type="text" name="nombre" value="{{ user.nombre }}" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Apellido</label>
-                        <input type="text" name="apellido" value="{{ user.apellido }}" class="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                        <input type="text" name="apellido" value="{{ user.apellido }}" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Correo electrónico</label>
-                    <!-- Readonly porque el email es el ID -->
                     <input type="email" value="{{ user.email }}" readonly class="w-full bg-[#111] border border-gray-800 rounded p-2.5 text-sm text-gray-500 cursor-not-allowed">
                 </div>
 
                 <div>
-                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Teléfono</label>
-                    <input type="tel" name="telefono" value="{{ user.telefono }}" placeholder="+52..." class="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Número de Celular</label>
+                    <div class="flex gap-2">
+                        <div class="relative w-32">
+                            <select id="ladaSelect" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none appearance-none cursor-pointer">
+                                <option value="+52">🇲🇽 +52</option>
+                                <option value="+1">🇺🇸 +1</option>
+                                <option value="+57">🇨🇴 +57</option>
+                                <option value="+54">🇦🇷 +54</option>
+                                <option value="+34">🇪🇸 +34</option>
+                                <option value="+56">🇨🇱 +56</option>
+                                <option value="+51">🇵🇪 +51</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                        </div>
+                        <input type="tel" id="telefonoInput" placeholder="Número" class="flex-1 bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
+                    <input type="hidden" name="telefono" id="telefonoFull" value="{{ user.telefono }}">
                 </div>
 
-                <div>
-                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Nueva Contraseña (Opcional)</label>
-                    <input type="password" name="password" placeholder="Dejar en blanco para no cambiar" class="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                <div class="border-t border-gray-800 my-4"></div>
+
+                <div class="space-y-3">
+                    <label class="block text-[10px] text-green-500 mb-1 uppercase font-bold">Cambiar Contraseña (Opcional)</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="password" id="newPass" name="password" placeholder="Nueva" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                        <input type="password" id="confirmPass" placeholder="Confirmar" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                    </div>
+                    
+                    <div id="passRequirements" class="text-[10px] space-y-1 transition-all duration-300 h-0 overflow-hidden opacity-0 p-2 bg-[#151515] rounded border border-gray-800">
+                        <p id="reqLen" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> Mínimo 8 caracteres</p>
+                        <p id="reqUp" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> 1 Mayúscula</p>
+                        <p id="reqNum" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> 1 Número</p>
+                        <p id="reqSym" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> 1 Símbolo</p>
+                        <p id="reqMatch" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> Coinciden</p>
+                    </div>
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-green-900/20">
+                    <button type="button" id="saveBtn" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
                         Guardar Cambios
                     </button>
                 </div>
@@ -239,101 +273,98 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 2: CONFIRMAR ELIMINACIÓN -->
-    <!-- ========================================== -->
+    <!-- MODAL 2: ELIMINAR -->
     <div id="deleteModal" class="modal hidden-modal fixed inset-0 bg-red-900/60 z-[70] flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="modal-content bg-[#1E1E1E] w-full max-w-sm rounded-2xl border border-red-500 shadow-2xl p-6 text-center">
-            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl border border-red-500/30">
-                ⚠️
-            </div>
+        <div class="modal-content bg-[#1E1E1E] w-full max-w-sm rounded-2xl border border-red-500 shadow-2xl p-6 text-center transform scale-95 transition-transform duration-300 overflow-hidden">
+            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl border border-red-500/30">⚠️</div>
             <h3 class="text-xl font-bold text-white mb-2">¿Estás seguro?</h3>
-            <p class="text-gray-400 text-xs mb-6 leading-relaxed px-4">
-                Esta acción es <span class="text-red-400 font-bold">irreversible</span>. Perderás acceso a tus cursos, progreso, certificados y configuración de pago.
-            </p>
-            
+            <p class="text-gray-400 text-xs mb-6 px-4">Esta acción es irreversible.</p>
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="closeModal('deleteModal')" class="bg-[#2A2A2A] hover:bg-[#333] text-white py-2.5 rounded-lg font-bold text-sm transition">Cancelar</button>
                 <form action="/eliminar-cuenta" method="POST">
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-bold text-sm transition shadow-lg shadow-red-900/30">Si, eliminar</button>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-bold text-sm transition">Si, eliminar</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script>
-        // --- SIDEBAR ---
+        // Sidebar & Dropdown
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleBtn');
-        const logoText = document.getElementById('logoText');
-        const libTitle = document.getElementById('libTitle');
-        const navTexts = document.querySelectorAll('.nav-text');
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
         let isCollapsed = false;
 
         toggleBtn.addEventListener('click', () => {
             isCollapsed = !isCollapsed;
-            if (isCollapsed) {
-                sidebar.classList.remove('w-64'); sidebar.classList.add('w-20', 'items-center');
-                logoText.classList.add('hidden');
-                libTitle.classList.add('hidden');
-                navTexts.forEach(t => t.classList.add('hidden'));
-            } else {
-                sidebar.classList.remove('w-20', 'items-center'); sidebar.classList.add('w-64');
-                logoText.classList.remove('hidden');
-                libTitle.classList.remove('hidden');
-                navTexts.forEach(t => t.classList.remove('hidden'));
-            }
+            if(isCollapsed) { sidebar.classList.remove('w-64'); sidebar.classList.add('w-20', 'items-center'); document.getElementById('logoText').classList.add('hidden'); document.getElementById('libTitle').classList.add('hidden'); }
+            else { sidebar.classList.remove('w-20', 'items-center'); sidebar.classList.add('w-64'); document.getElementById('logoText').classList.remove('hidden'); document.getElementById('libTitle').classList.remove('hidden'); }
         });
 
-        // --- DROPDOWN ---
-        const userMenuBtn = document.getElementById('userMenuBtn');
-        const userDropdown = document.getElementById('userDropdown');
-        const arrow = document.getElementById('userMenuArrow');
-
         if(userMenuBtn) {
-            userMenuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                userDropdown.classList.toggle('hidden');
-                if(userDropdown.classList.contains('hidden')){
-                    arrow.style.transform = 'rotate(0deg)';
-                } else {
-                    arrow.style.transform = 'rotate(180deg)';
-                }
-            });
-            document.addEventListener('click', (e) => {
-                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-                    userDropdown.classList.add('hidden');
-                    if(arrow) arrow.style.transform = 'rotate(0deg)';
-                }
-            });
+            userMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); userDropdown.classList.toggle('hidden'); });
+            document.addEventListener('click', (e) => { if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) userDropdown.classList.add('hidden'); });
         }
 
-        // --- LÓGICA DE MODALES ---
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('hidden-modal');
-            // Timeout pequeño para permitir que la animación CSS ocurra
-            setTimeout(() => {
-                modal.classList.add('active');
-            }, 10);
+        // Modales
+        function openModal(id) { document.getElementById(id).classList.remove('hidden-modal'); setTimeout(() => document.getElementById(id).classList.add('active'), 10); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); setTimeout(() => document.getElementById(id).classList.add('hidden-modal'), 300); }
+
+        // Form Logic
+        const newPass = document.getElementById('newPass');
+        const confirmPass = document.getElementById('confirmPass');
+        const passRequirements = document.getElementById('passRequirements');
+        const saveBtn = document.getElementById('saveBtn');
+        const ladaSelect = document.getElementById('ladaSelect');
+        const telefonoInput = document.getElementById('telefonoInput');
+        const telefonoFull = document.getElementById('telefonoFull');
+
+        if(telefonoFull.value && telefonoFull.value.includes(' ')) {
+            const parts = telefonoFull.value.split(' ');
+            ladaSelect.value = parts[0];
+            telefonoInput.value = parts.slice(1).join(' ');
         }
 
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('active');
-            setTimeout(() => {
-                modal.classList.add('hidden-modal');
-            }, 300); // Esperar a que termine la transición de 0.3s
+        newPass.addEventListener('focus', () => { passRequirements.classList.remove('h-0', 'opacity-0'); passRequirements.classList.add('h-auto', 'opacity-100', 'mt-2'); });
+
+        function validatePassword() {
+            const val = newPass.value;
+            const confirmVal = confirmPass.value;
+            if(val === '') { saveBtn.disabled = false; return true; }
+
+            const hasLen = val.length >= 8;
+            const hasUp = /[A-Z]/.test(val);
+            const hasNum = /\d/.test(val);
+            const hasSym = /[!@#$%^&*(),.?":{}|<>]/.test(val);
+            const match = val === confirmVal && confirmVal !== '';
+
+            updateCheck('reqLen', hasLen); updateCheck('reqUp', hasUp); updateCheck('reqNum', hasNum); updateCheck('reqSym', hasSym); updateCheck('reqMatch', match);
+            const isValid = hasLen && hasUp && hasNum && hasSym && match;
+            saveBtn.disabled = !isValid;
+            return isValid;
         }
 
-        // Cerrar modal al hacer clic fuera
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeModal(modal.id);
-                }
-            });
+        function updateCheck(id, isValid) {
+            const el = document.getElementById(id);
+            const icon = el.querySelector('span');
+            if(isValid) {
+                el.classList.remove('check-invalid'); el.classList.add('check-valid');
+                icon.classList.remove('check-icon-invalid'); icon.classList.add('check-icon-valid');
+            } else {
+                el.classList.remove('check-valid'); el.classList.add('check-invalid');
+                icon.classList.remove('check-icon-valid'); icon.classList.add('check-icon-invalid');
+            }
+        }
+
+        newPass.addEventListener('input', validatePassword);
+        confirmPass.addEventListener('input', validatePassword);
+
+        saveBtn.addEventListener('click', (e) => {
+            if(newPass.value !== '' && !validatePassword()) return;
+            if(telefonoInput.value) telefonoFull.value = `${ladaSelect.value} ${telefonoInput.value}`;
+            else telefonoFull.value = '';
+            document.getElementById('profileForm').submit();
         });
     </script>
 </body>

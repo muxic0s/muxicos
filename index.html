@@ -11,17 +11,15 @@
         .slide { transition: opacity 1s ease-in-out; position: absolute; inset: 0; opacity: 0; pointer-events: none; }
         .slide.active { opacity: 1; z-index: 10; pointer-events: auto; }
         .hide-text { display: none; }
-        /* Animación suave para el dropdown */
+        /* Animación Dropdown */
         .dropdown-enter { transform: translateY(-10px); opacity: 0; }
         .dropdown-enter-active { transform: translateY(0); opacity: 1; transition: all 0.2s ease; }
     </style>
 </head>
 <body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
 
-    <!-- SIDEBAR RETRÁCTIL -->
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-black flex flex-col p-4 space-y-8 flex-shrink-0 border-r border-gray-800 transition-all duration-300 ease-in-out">
-        
-        <!-- Header Sidebar -->
         <div class="flex items-center justify-between h-10">
             <div class="flex items-center gap-2 overflow-hidden whitespace-nowrap">
                 <svg class="w-8 h-8 fill-current text-white flex-shrink-0" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
@@ -34,70 +32,57 @@
         
         <nav class="space-y-2 text-gray-400 text-sm font-medium flex-1">
             <div class="space-y-1">
-                <!-- Home (Activo) -->
                 <a href="/" class="flex items-center gap-4 text-white bg-[#282828] p-3 rounded hover:bg-[#282828] transition group overflow-hidden whitespace-nowrap" title="Home">
                     <span class="text-xl flex-shrink-0">🏠</span> <span class="nav-text">Home</span>
                 </a>
                 <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Cursos">
                     <span class="text-xl flex-shrink-0">📚</span> <span class="nav-text">Cursos</span>
                 </a>
-                <!-- NUEVO: Favoritos -->
                 <a href="#" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Favoritos">
                     <span class="text-xl flex-shrink-0">❤️</span> <span class="nav-text">Favoritos</span>
                 </a>
             </div>
-
-            <!-- Biblioteca Rápida -->
             <div class="pt-4 border-t border-gray-800 mt-4">
                 <h3 id="libTitle" class="uppercase text-[10px] font-bold text-gray-600 mb-2 px-1 whitespace-nowrap">Biblioteca</h3>
-                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
-                    <span class="text-xl flex-shrink-0">🎸</span> <span class="nav-text">Guitarra</span>
-                </a>
-                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
-                    <span class="text-xl flex-shrink-0">🎹</span> <span class="nav-text">Acordeón</span>
-                </a>
-                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
-                    <span class="text-xl flex-shrink-0">🎻</span> <span class="nav-text">Tololoche</span>
-                </a>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap"><span class="text-xl flex-shrink-0">🎸</span> <span class="nav-text">Guitarra</span></a>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap"><span class="text-xl flex-shrink-0">🎹</span> <span class="nav-text">Acordeón</span></a>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap"><span class="text-xl flex-shrink-0">🎻</span> <span class="nav-text">Tololoche</span></a>
             </div>
         </nav>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 no-scrollbar relative w-full">
+    <!-- MAIN -->
+    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 no-scrollbar relative">
         
-        <!-- HEADER SUPERIOR -->
+        <!-- HEADER -->
         <header class="flex justify-end items-center mb-6 relative z-50">
             <div class="flex items-center gap-4">
                 {% if usuario %}
-                    <!-- MENÚ DE USUARIO DROPDOWN -->
+                    <!-- DROPDOWN USUARIO -->
                     <div class="relative">
                         <button id="userMenuBtn" class="flex items-center gap-3 hover:bg-[#282828] p-1 pr-3 rounded-full transition group focus:outline-none">
-                            <!-- Avatar -->
-                            <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-xs border border-white">
-                                {{ usuario.nombre[0] | upper }} 
-                            </div>
+                            <!-- AVATAR LÓGICO -->
+                            {% if usuario.foto_url %}
+                                <div class="w-8 h-8 rounded-full bg-cover bg-center border-2 border-transparent group-hover:border-white transition" style="background-image: url('{{ usuario.foto_url }}');"></div>
+                            {% else %}
+                                <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-xs border border-white">
+                                    {{ usuario.nombre[0] | upper }} 
+                                </div>
+                            {% endif %}
+                            
                             <span class="text-sm font-bold text-white hidden sm:block">{{ usuario.nombre }}</span>
-                            <!-- Flechita -->
-                            <svg class="w-3 h-3 text-gray-400 transition-transform duration-200" id="userMenuArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
 
-                        <!-- Contenido del Menú -->
-                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1E1E1E] rounded-xl shadow-xl border border-gray-800 overflow-hidden transform origin-top-right transition-all duration-200">
-                            <div class="px-4 py-3 border-b border-gray-700 bg-[#252525]">
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1E1E1E] rounded-xl shadow-xl border border-gray-800 overflow-hidden transform origin-top-right z-50">
+                            <div class="px-4 py-3 border-b border-gray-700">
                                 <p class="text-sm text-white font-bold">{{ usuario.nombre }}</p>
-                                <p class="text-[10px] text-gray-400 truncate">@{{ usuario.username }}</p>
+                                <p class="text-xs text-gray-500 truncate">@{{ usuario.username }}</p>
                             </div>
-                            <a href="/perfil" class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition flex items-center gap-2">
-                                <span>👤</span> Mi Perfil
-                            </a>
-                            <a href="#" class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition flex items-center gap-2">
-                                <span>⚙️</span> Configuración
-                            </a>
+                            <a href="/perfil" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition">Mi Perfil</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition">Configuración</a>
                             <div class="border-t border-gray-700"></div>
-                            <a href="/logout" class="block px-4 py-2.5 text-sm text-red-400 hover:bg-[#2A2A2A] hover:text-red-300 transition flex items-center gap-2">
-                                <span>🚪</span> Cerrar Sesión
-                            </a>
+                            <a href="/logout" class="block px-4 py-2 text-sm text-red-400 hover:bg-[#2A2A2A] hover:text-red-300 transition">Cerrar Sesión</a>
                         </div>
                     </div>
                 {% else %}
@@ -107,14 +92,13 @@
             </div>
         </header>
 
-        <!-- BANNER CARRUSEL -->
+        <!-- BANNER -->
         <div class="relative w-full h-80 rounded-2xl mb-10 overflow-hidden bg-gray-900 group shadow-2xl">
             {% if banners %}
                 {% for banner in banners %}
                 <div class="slide {{ 'active' if loop.first else '' }}" id="slide-{{ loop.index0 }}">
                     <div class="absolute inset-0 bg-cover bg-center transition duration-700 transform group-hover:scale-105" style="background-image: url('{{ banner.img }}');"></div>
                     <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-                    
                     <div class="relative z-20 h-full flex flex-col justify-end p-10 max-w-2xl">
                         <span class="inline-block px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-4 w-fit {{ 'bg-green-500 text-black' if banner.color == 'green' else 'bg-yellow-500 text-black' if banner.color == 'yellow' else 'bg-purple-600 text-white' }}">{{ banner.tag }}</span>
                         <h2 class="text-4xl md:text-5xl font-black mb-4 leading-tight drop-shadow-xl">{{ banner.titulo }}</h2>
@@ -135,13 +119,12 @@
             {% endif %}
         </div>
 
-        <!-- SECCIÓN: RECIENTES -->
+        <!-- RECIENTES -->
         <section class="mb-10">
             <div class="flex justify-between items-end mb-4">
                 <h3 class="text-xl font-bold">Agregados Recientemente</h3>
                 <a href="/cursos" class="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-wide transition">Ver todo →</a>
             </div>
-            
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {% if cursos %}
                     {% for curso in cursos %}
@@ -149,16 +132,11 @@
                         <div class="h-36 bg-gray-700 rounded mb-4 overflow-hidden relative shadow-lg">
                             <img src="{{ curso[3] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90 group-hover:opacity-100" loading="lazy">
                             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black/40">
-                                <div class="bg-green-500 text-black rounded-full p-2 shadow-lg transform scale-0 group-hover:scale-100 transition duration-300 delay-75">
-                                    <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                </div>
+                                <div class="bg-green-500 text-black rounded-full p-2 shadow-lg transform scale-0 group-hover:scale-100 transition duration-300 delay-75"><svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
                             </div>
                         </div>
                         <h4 class="font-bold mb-1 text-sm line-clamp-1 group-hover:text-green-400 transition">{{ curso[1] }}</h4>
-                        <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-gray-600 inline-block"></span> 
-                            {{ curso[5] }}
-                        </p>
+                        <p class="text-xs text-gray-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-600 inline-block"></span> {{ curso[5] }}</p>
                     </a>
                     {% endfor %}
                 {% else %}
@@ -172,9 +150,8 @@
 
     </main>
 
-    <!-- SCRIPTS -->
     <script>
-        // --- 1. SIDEBAR RETRÁCTIL ---
+        // UI
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('toggleBtn');
         const logoText = document.getElementById('logoText');
@@ -185,47 +162,24 @@
         toggleBtn.addEventListener('click', () => {
             isCollapsed = !isCollapsed;
             if (isCollapsed) {
-                sidebar.classList.remove('w-64');
-                sidebar.classList.add('w-20', 'items-center');
-                logoText.classList.add('hidden');
-                libTitle.classList.add('hidden');
+                sidebar.classList.remove('w-64'); sidebar.classList.add('w-20', 'items-center');
+                logoText.classList.add('hidden'); libTitle.classList.add('hidden');
                 navTexts.forEach(t => t.classList.add('hidden'));
             } else {
-                sidebar.classList.remove('w-20', 'items-center');
-                sidebar.classList.add('w-64');
-                logoText.classList.remove('hidden');
-                libTitle.classList.remove('hidden');
+                sidebar.classList.remove('w-20', 'items-center'); sidebar.classList.add('w-64');
+                logoText.classList.remove('hidden'); libTitle.classList.remove('hidden');
                 navTexts.forEach(t => t.classList.remove('hidden'));
             }
         });
 
-        // --- 2. DROPDOWN DE USUARIO ---
         const userMenuBtn = document.getElementById('userMenuBtn');
         const userDropdown = document.getElementById('userDropdown');
-        const arrow = document.getElementById('userMenuArrow');
-
         if (userMenuBtn) {
-            userMenuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                userDropdown.classList.toggle('hidden');
-                // Rotar flechita
-                if(userDropdown.classList.contains('hidden')){
-                    arrow.style.transform = 'rotate(0deg)';
-                } else {
-                    arrow.style.transform = 'rotate(180deg)';
-                }
-            });
-
-            // Cerrar al hacer clic fuera
-            document.addEventListener('click', (e) => {
-                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-                    userDropdown.classList.add('hidden');
-                    arrow.style.transform = 'rotate(0deg)';
-                }
-            });
+            userMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); userDropdown.classList.toggle('hidden'); });
+            document.addEventListener('click', (e) => { if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) userDropdown.classList.add('hidden'); });
         }
 
-        // --- 3. SLIDER AUTOMÁTICO ---
+        // Slider
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const indicators = document.querySelectorAll('.indicator');
@@ -236,27 +190,16 @@
             slides.forEach(s => s.classList.remove('active'));
             indicators.forEach(i => i.classList.remove('bg-white'));
             indicators.forEach(i => i.classList.add('bg-white/50'));
-
             slides[index].classList.add('active');
-            if(indicators[index]) {
-                indicators[index].classList.remove('bg-white/50');
-                indicators[index].classList.add('bg-white');
-            }
+            if(indicators[index]) { indicators[index].classList.remove('bg-white/50'); indicators[index].classList.add('bg-white'); }
             currentSlide = index;
         }
 
-        function nextSlide() {
-            let next = (currentSlide + 1) % totalSlides;
-            showSlide(next);
-        }
+        function nextSlide() { let next = (currentSlide + 1) % totalSlides; showSlide(next); }
 
         if (totalSlides > 0) {
             let slideInterval = setInterval(nextSlide, 5000);
-            window.changeSlide = function(index) {
-                clearInterval(slideInterval);
-                showSlide(index);
-                slideInterval = setInterval(nextSlide, 5000);
-            }
+            window.changeSlide = function(index) { clearInterval(slideInterval); showSlide(index); slideInterval = setInterval(nextSlide, 5000); }
         }
     </script>
 </body>
