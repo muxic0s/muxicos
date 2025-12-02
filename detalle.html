@@ -10,98 +10,149 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .play-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .group:hover .play-btn { transform: scale(1.1); background-color: #ff0000; }
+        .hide-text { display: none; }
+        
+        /* Animación Corazón */
+        @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+        .heart-active { color: #ef4444 !important; fill: #ef4444 !important; animation: heartPop 0.3s ease; }
     </style>
 </head>
 <body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
 
-    <!-- SIDEBAR -->
-    <aside class="w-20 lg:w-64 bg-black flex flex-col p-6 space-y-8 flex-shrink-0 border-r border-gray-800">
-        <div class="text-xl lg:text-2xl font-bold tracking-tight hidden lg:block flex items-center gap-2">
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-            Muxicos
+    <!-- SIDEBAR RETRÁCTIL -->
+    <aside id="sidebar" class="w-64 bg-black flex flex-col p-4 space-y-8 flex-shrink-0 border-r border-gray-800 transition-all duration-300 ease-in-out">
+        
+        <div class="flex items-center justify-between h-10">
+            <div class="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+                <svg class="w-8 h-8 fill-current text-white flex-shrink-0" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                <span id="logoText" class="text-xl font-bold tracking-tight transition-opacity duration-200">Muxicos</span>
+            </div>
+            <button id="toggleBtn" class="text-gray-400 hover:text-white p-1 rounded hover:bg-gray-800 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
         </div>
-        <nav class="space-y-4 text-gray-400 text-sm font-medium">
-             <a href="/" class="flex items-center gap-3 hover:text-white p-2 transition"><span>🏠</span> <span class="hidden lg:inline">Home</span></a>
-             <a href="/cursos" class="flex items-center gap-3 hover:text-white p-2 transition"><span>📚</span> <span class="hidden lg:inline">Cursos</span></a>
-             <a href="/perfil" class="flex items-center gap-3 hover:text-white p-2 transition"><span>👤</span> <span class="hidden lg:inline">Perfil</span></a>
+        
+        <nav class="space-y-2 text-gray-400 text-sm font-medium flex-1">
+            <div class="space-y-1">
+                <a href="/" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Home">
+                    <span class="text-xl flex-shrink-0">🏠</span> <span class="nav-text">Home</span>
+                </a>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Cursos">
+                    <span class="text-xl flex-shrink-0">📚</span> <span class="nav-text">Cursos</span>
+                </a>
+                <!-- Opción Favoritos -->
+                <a href="#" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Favoritos">
+                    <span class="text-xl flex-shrink-0">❤️</span> <span class="nav-text">Favoritos</span>
+                </a>
+            </div>
+
+            <div class="pt-4 border-t border-gray-800 mt-4">
+                <h3 id="libTitle" class="uppercase text-[10px] font-bold text-gray-600 mb-2 px-1 whitespace-nowrap">Navegación</h3>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
+                    <span class="text-xl flex-shrink-0">🔙</span> <span class="nav-text">Volver al catálogo</span>
+                </a>
+            </div>
         </nav>
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 no-scrollbar">
+    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 no-scrollbar w-full relative">
         
-        <!-- VIDEO & INFO (Columna Izquierda) -->
-        <div class="lg:col-span-2 space-y-6">
+        <!-- HEADER (Breadcrumbs + Dropdown) -->
+        <div class="col-span-full flex justify-between items-center mb-2">
             <!-- Breadcrumbs -->
             <div class="text-xs text-gray-500 flex items-center gap-2">
-                <span>Cursos</span> 
+                <a href="/cursos" class="hover:text-white">Cursos</a> 
                 <span>/</span> 
                 <span class="text-gray-300">{{ curso[5] }}</span> 
                 <span>/</span> 
                 <span class="text-green-500">Reproduciendo</span>
             </div>
-            
-            <!-- REPRODUCTOR (Lite Embed Dinámico) -->
-            <!-- Al hacer clic, carga el video con el ID que viene de Python -->
+
+            <!-- MENU USUARIO (Dropdown) -->
+            {% if usuario %}
+            <div class="relative flex-shrink-0 z-50">
+                <button id="userMenuBtn" class="flex items-center gap-2 hover:bg-[#282828] p-1 pr-3 rounded-full transition group focus:outline-none">
+                    <div class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-sm border-2 border-transparent group-hover:border-white transition">
+                        {{ usuario.nombre[0] | upper }} 
+                    </div>
+                    <svg class="w-3 h-3 text-gray-400 transition-transform duration-200" id="userMenuArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1E1E1E] rounded-xl shadow-xl border border-gray-800 overflow-hidden transform origin-top-right transition-all duration-200">
+                    <div class="px-4 py-3 border-b border-gray-700 bg-[#252525]">
+                        <p class="text-sm text-white font-bold">{{ usuario.nombre }}</p>
+                        <p class="text-[10px] text-gray-400 truncate">@{{ usuario.username }}</p>
+                    </div>
+                    <a href="/perfil" class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition flex items-center gap-2">
+                        <span>👤</span> Mi Perfil
+                    </a>
+                    <a href="#" class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition flex items-center gap-2">
+                        <span>⚙️</span> Configuración
+                    </a>
+                    <div class="border-t border-gray-700"></div>
+                    <a href="/logout" class="block px-4 py-2.5 text-sm text-red-400 hover:bg-[#2A2A2A] hover:text-red-300 transition flex items-center gap-2">
+                        <span>🚪</span> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- VIDEO & INFO (Izquierda) -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- REPRODUCTOR -->
             <div id="videoContainer" class="w-full aspect-video bg-black rounded-xl overflow-hidden relative group cursor-pointer shadow-2xl border border-gray-800" 
                  onclick="loadVideo(this, '{{ video_id }}')">
                 
-                <!-- Thumbnail de la Base de Datos -->
                 <img src="{{ curso[3] }}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-500">
                 
-                <!-- Botón Play -->
                 <div class="absolute inset-0 flex items-center justify-center">
                     <button class="play-btn bg-white/20 backdrop-blur-sm border border-white/30 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg">
                         <svg class="w-6 h-6 fill-current ml-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     </button>
                 </div>
-                
                 <p class="absolute bottom-4 left-4 text-xs font-bold bg-black/60 px-2 py-1 rounded">Haz clic para iniciar</p>
             </div>
 
-            <!-- Datos del Curso -->
+            <!-- INFO -->
             <div class="flex justify-between items-start border-b border-gray-800 pb-6">
                 <div>
-                    <h2 class="text-2xl font-bold mb-2">{{ curso[1] }}</h2>
+                    <h2 class="text-2xl font-bold mb-2 text-white">{{ curso[1] }}</h2>
                     <div class="flex items-center gap-3">
-                         <!-- Avatar con inicial del maestro -->
-                         <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold">{{ curso[5][0] }}</div>
+                         <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold text-white">{{ curso[5][0] }}</div>
                          <div>
-                             <p class="text-sm font-bold text-white">{{ curso[5] }}</p> <!-- Nombre Maestro -->
+                             <p class="text-sm font-bold text-white">{{ curso[5] }}</p>
                              <p class="text-xs text-gray-500">Instructor verificado</p>
                          </div>
                     </div>
                 </div>
                 
-                <!-- Botones de Acción -->
+                <!-- BOTONES DE ACCIÓN -->
                 <div class="flex gap-2">
-                    <button class="bg-[#2A2A2A] hover:bg-[#3A3A3A] p-2 rounded-full transition" title="Guardar">
-                        🔖
+                    <button id="favBtn" class="bg-[#2A2A2A] text-gray-300 hover:bg-[#3A3A3A] hover:text-white p-2 rounded-full transition group" title="Añadir a favoritos">
+                        <svg class="w-5 h-5 fill-none stroke-current transition-all" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                     </button>
-                    <button class="bg-[#2A2A2A] hover:bg-[#3A3A3A] p-2 rounded-full transition" title="Compartir">
-                        🔗
+                    <button id="shareBtn" class="bg-[#2A2A2A] text-gray-300 hover:bg-[#3A3A3A] hover:text-white p-2 rounded-full transition" title="Copiar enlace">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M16 11h5l-9 10-9-10h5v-11h8v11zm1 11h-10v2h10v-2z"/></svg>
                     </button>
                 </div>
             </div>
 
-            <!-- Descripción -->
             <div class="text-sm text-gray-400 leading-relaxed bg-[#1E1E1E] p-6 rounded-xl border border-gray-800">
                 <h3 class="font-bold text-white mb-2">Acerca de esta lección</h3>
                 <p>{{ curso[4] }}</p>
             </div>
         </div>
 
-        <!-- BARRA LATERAL (Sugerencias) -->
+        <!-- SUGERENCIAS (Derecha) -->
         <div class="lg:col-span-1 space-y-6">
             <div class="bg-[#181818] rounded-xl border border-gray-800 overflow-hidden">
                 <div class="p-4 border-b border-gray-800 bg-[#1E1E1E]">
-                    <h3 class="font-bold text-sm">Siguientes lecciones</h3>
-                    <p class="text-[10px] text-gray-500">Recomendado para ti</p>
+                    <h3 class="font-bold text-sm text-white">Siguientes lecciones</h3>
                 </div>
-                
                 <div class="max-h-[600px] overflow-y-auto no-scrollbar">
                     
-                    <!-- Curso actual (marcado como activo) -->
+                    <!-- Curso actual (Activo) -->
                     <div class="p-4 flex gap-3 bg-[#2A2A2A] border-l-4 border-green-500">
                         <span class="text-green-500 font-bold text-xs mt-1">▶</span>
                         <div>
@@ -110,54 +161,111 @@
                         </div>
                     </div>
 
-                    <!-- Lista de Sugerencias (Viene del Backend) -->
                     {% for sugerencia in sugerencias %}
                     <a href="/curso/{{ sugerencia[0] }}" class="p-4 flex gap-3 hover:bg-[#222] cursor-pointer transition group border-b border-gray-800 last:border-0">
-                        <!-- Miniatura -->
                         <div class="w-24 h-14 bg-gray-700 rounded overflow-hidden flex-shrink-0 relative">
                             <img src="{{ sugerencia[3] }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                            <div class="absolute bottom-1 right-1 bg-black/80 px-1 rounded text-[8px] font-bold">Video</div>
                         </div>
-                        
-                        <!-- Info -->
                         <div class="flex-1">
                             <p class="text-xs font-bold text-gray-300 group-hover:text-white line-clamp-2 leading-snug">{{ sugerencia[1] }}</p>
-                            <p class="text-[10px] text-gray-500 mt-1 flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
-                                {{ sugerencia[5] }}
-                            </p>
+                            <p class="text-[10px] text-gray-500 mt-1">{{ sugerencia[5] }}</p>
                         </div>
                     </a>
                     {% endfor %}
-
                 </div>
             </div>
-            
-            <!-- Banner pequeño -->
-            <div class="bg-gradient-to-br from-green-900 to-black p-6 rounded-xl text-center border border-green-900/30">
-                <p class="text-xs font-bold text-green-400 mb-2">¿Quieres aprender más?</p>
-                <p class="text-[10px] text-gray-300 mb-4">Accede a rutas de aprendizaje completas y conviértete en un pro.</p>
-                <a href="/cursos" class="bg-white text-black text-xs font-bold px-4 py-2 rounded-full hover:bg-gray-200 transition">Ver catálogo completo</a>
-            </div>
+        </div>
+
+        <!-- Notificación Toast -->
+        <div id="toast" class="fixed bottom-8 right-8 bg-green-600 text-white px-6 py-3 rounded-lg shadow-2xl text-sm font-bold opacity-0 transition-opacity duration-300 pointer-events-none transform translate-y-2">
+            ✅ Enlace copiado al portapapeles
         </div>
     </main>
 
-    <!-- SCRIPT DE CARGA OPTIMIZADA -->
+    <!-- SCRIPTS -->
     <script>
-        function loadVideo(element, videoId) {
-            // Inyecta el iframe de YouTube con Autoplay
-            element.innerHTML = `
-                <iframe 
-                    width="100%" 
-                    height="100%" 
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
-                    title="YouTube video player" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
-            `;
+        // --- 1. SIDEBAR RETRÁCTIL ---
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const logoText = document.getElementById('logoText');
+        const libTitle = document.getElementById('libTitle');
+        const navTexts = document.querySelectorAll('.nav-text');
+        let isCollapsed = false;
+
+        toggleBtn.addEventListener('click', () => {
+            isCollapsed = !isCollapsed;
+            if (isCollapsed) {
+                sidebar.classList.remove('w-64');
+                sidebar.classList.add('w-20', 'items-center');
+                logoText.classList.add('hidden');
+                libTitle.classList.add('hidden');
+                navTexts.forEach(t => t.classList.add('hidden'));
+            } else {
+                sidebar.classList.remove('w-20', 'items-center');
+                sidebar.classList.add('w-64');
+                logoText.classList.remove('hidden');
+                libTitle.classList.remove('hidden');
+                navTexts.forEach(t => t.classList.remove('hidden'));
+            }
+        });
+
+        // --- 2. DROPDOWN ---
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const arrow = document.getElementById('userMenuArrow');
+
+        if (userMenuBtn) {
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+                if(userDropdown.classList.contains('hidden')){
+                    arrow.style.transform = 'rotate(0deg)';
+                } else {
+                    arrow.style.transform = 'rotate(180deg)';
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.add('hidden');
+                    if(arrow) arrow.style.transform = 'rotate(0deg)';
+                }
+            });
         }
+
+        // --- 3. VIDEO ---
+        function loadVideo(element, videoId) {
+            element.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        }
+
+        // --- 4. FAVORITOS Y COMPARTIR ---
+        const favBtn = document.getElementById('favBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const toast = document.getElementById('toast');
+
+        // Toggle Corazón
+        favBtn.addEventListener('click', () => {
+            const icon = favBtn.querySelector('svg');
+            icon.classList.toggle('heart-active');
+            
+            // Si está activo, llenamos el icono
+            if(icon.classList.contains('heart-active')) {
+                icon.setAttribute('fill', 'currentColor');
+                icon.setAttribute('stroke', 'none');
+            } else {
+                icon.setAttribute('fill', 'none');
+                icon.setAttribute('stroke', 'currentColor');
+            }
+        });
+
+        // Compartir URL
+        shareBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+                setTimeout(() => { 
+                    toast.classList.add('opacity-0', 'translate-y-2'); 
+                }, 2000);
+            });
+        });
     </script>
 </body>
 </html>

@@ -5,52 +5,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muxicos - Mi Perfil</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-text { display: none; }
+        
+        /* Animaciones para Modales */
+        .modal { transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .modal-content { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform: scale(0.95); }
+        
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal.active .modal-content { transform: scale(1); }
+        
+        .modal.hidden-modal { opacity: 0; visibility: hidden; pointer-events: none; }
+    </style>
 </head>
-<body class="bg-[#121212] text-white font-sans min-h-screen flex">
+<body class="bg-[#121212] text-white font-sans min-h-screen flex overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-black hidden lg:flex flex-col p-6 border-r border-gray-800 space-y-8">
-        <h1 class="text-2xl font-bold">Muxicos</h1>
-        <nav class="space-y-2 text-gray-400 text-sm font-medium">
-             <a href="/" class="flex items-center gap-3 hover:text-white p-2 rounded transition"><span>🏠</span> Home</a>
-             <a href="#" class="flex items-center gap-3 hover:text-white p-2 rounded transition"><span>📚</span> Cursos</a>
-             <a href="/perfil" class="flex items-center gap-3 text-white bg-[#282828] p-2 rounded transition"><span>👤</span> Perfil</a>
+    <!-- SIDEBAR RETRÁCTIL -->
+    <aside id="sidebar" class="w-64 bg-black flex flex-col p-4 space-y-8 flex-shrink-0 border-r border-gray-800 transition-all duration-300 ease-in-out">
+        <div class="flex items-center justify-between h-10">
+            <div class="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+                <svg class="w-8 h-8 fill-current text-white flex-shrink-0" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                <span id="logoText" class="text-xl font-bold tracking-tight transition-opacity duration-200">Muxicos</span>
+            </div>
+            <button id="toggleBtn" class="text-gray-400 hover:text-white p-1 rounded hover:bg-gray-800 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+        
+        <nav class="space-y-2 text-gray-400 text-sm font-medium flex-1">
+            <div class="space-y-1">
+                <a href="/" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Home">
+                    <span class="text-xl flex-shrink-0">🏠</span> <span class="nav-text">Home</span>
+                </a>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Cursos">
+                    <span class="text-xl flex-shrink-0">📚</span> <span class="nav-text">Cursos</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Favoritos">
+                    <span class="text-xl flex-shrink-0">❤️</span> <span class="nav-text">Favoritos</span>
+                </a>
+            </div>
+
+            <div class="pt-4 border-t border-gray-800 mt-4">
+                <h3 id="libTitle" class="uppercase text-[10px] font-bold text-gray-600 mb-2 px-1 whitespace-nowrap">Biblioteca</h3>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
+                    <span class="text-xl flex-shrink-0">🎸</span> <span class="nav-text">Guitarra</span>
+                </a>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
+                    <span class="text-xl flex-shrink-0">🎹</span> <span class="nav-text">Acordeón</span>
+                </a>
+                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
+                    <span class="text-xl flex-shrink-0">🎻</span> <span class="nav-text">Tololoche</span>
+                </a>
+            </div>
         </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-8 overflow-y-auto">
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-1 p-8 overflow-y-auto w-full no-scrollbar relative">
         
-        <!-- Header Section -->
-        <div class="flex justify-between items-end mb-8">
+        <!-- HEADER -->
+        <div class="flex justify-between items-end mb-8 relative z-40">
             <div>
                 <h2 class="text-3xl font-bold mb-1">Perfil de usuario</h2>
-                <p class="text-gray-400 text-sm">Gestiona tus datos, cursos y actividad dentro de Muxicos.</p>
+                <p class="text-gray-400 text-sm">Gestiona tus datos y actividad.</p>
+                
+                <!-- Mensajes Flash (Éxito/Error al actualizar) -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mt-4 text-xs font-bold px-4 py-3 rounded-lg border flex items-center gap-2 {{ 'bg-green-900/30 border-green-500 text-green-400' if category == 'success' else 'bg-red-900/30 border-red-500 text-red-400' }}">
+                                <span>{{ '✅' if category == 'success' else '⚠️' }}</span>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
             </div>
-            <div class="flex gap-3">
-                <a href="/logout" class="bg-[#2A2A2A] hover:bg-[#3A3A3A] px-4 py-2 rounded text-sm font-bold transition">Cerrar sesión</a>
-                <button class="bg-white text-black hover:bg-gray-200 px-4 py-2 rounded text-sm font-bold transition">Editar perfil</button>
+            
+            <!-- DROPDOWN -->
+            <div class="relative flex-shrink-0">
+                <button id="userMenuBtn" class="flex items-center gap-2 hover:bg-[#282828] p-1 pr-3 rounded-full transition group focus:outline-none">
+                    <div class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-sm border-2 border-transparent group-hover:border-white transition">
+                        {{ user.nombre[0] | upper }} 
+                    </div>
+                    <svg class="w-3 h-3 text-gray-400 transition-transform duration-200" id="userMenuArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1E1E1E] rounded-xl shadow-xl border border-gray-800 overflow-hidden z-50 transform origin-top-right transition-all">
+                    <div class="px-4 py-3 border-b border-gray-700 bg-[#252525]">
+                        <p class="text-sm text-white font-bold">{{ user.nombre }}</p>
+                        <p class="text-[10px] text-gray-400 truncate">@{{ user.username }}</p>
+                    </div>
+                    <button onclick="openModal('configModal')" class="w-full text-left block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition flex items-center gap-2">
+                        <span>⚙️</span> Configuración
+                    </button>
+                    <div class="border-t border-gray-700"></div>
+                    <a href="/logout" class="block px-4 py-2.5 text-sm text-red-400 hover:bg-[#2A2A2A] hover:text-red-300 transition flex items-center gap-2">
+                        <span>🚪</span> Cerrar Sesión
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- GRID LAYOUT -->
+        <!-- GRID DE INFORMACIÓN -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- Columna Izquierda: Tarjeta de Usuario -->
+            <!-- TARJETA IZQUIERDA -->
             <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 h-fit">
                 <div class="flex items-center gap-4 mb-6">
-                    <!-- Avatar Genérico (Placeholder Gris) -->
-                    <div class="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden border-2 border-green-500">
-                        <svg class="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                        </svg>
+                    <div class="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-green-500 text-2xl font-bold text-white shadow-lg relative group cursor-pointer">
+                        {{ user.nombre[0] | upper }}
+                        <!-- Overlay de "Editar Foto" (Visual) -->
+                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                            <span class="text-[10px]">📷</span>
+                        </div>
                     </div>
                     <div>
-                        <!-- DATOS DINÁMICOS -->
-                        <h3 class="text-xl font-bold">{{ user.nombre }} {{ user.apellido }}</h3>
+                        <h3 class="text-xl font-bold text-white">{{ user.nombre }} {{ user.apellido }}</h3>
                         <p class="text-gray-400 text-sm">@{{ user.username }}</p>
                         <div class="flex items-center gap-1 mt-1">
-                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                             <span class="text-xs text-green-500 font-bold uppercase">En línea</span>
                         </div>
                     </div>
@@ -59,94 +134,207 @@
                 <div class="space-y-4 text-sm mb-6">
                     <div class="flex justify-between py-2 border-b border-gray-800">
                         <span class="text-gray-400">Correo</span>
-                        <span class="font-medium text-right truncate w-32">{{ user.email }}</span>
+                        <span class="font-medium text-right truncate w-32 text-gray-300" title="{{ user.email }}">{{ user.email }}</span>
                     </div>
                     <div class="flex justify-between py-2 border-b border-gray-800">
-                        <span class="text-gray-400">Miembro desde</span>
-                        <span class="font-medium">Dic 2025</span> <!-- Podríamos hacerlo dinámico con datetime -->
+                        <span class="text-gray-400">Teléfono</span>
+                        <span class="font-medium text-right text-gray-300">{{ user.telefono if user.telefono else 'No registrado' }}</span>
                     </div>
                     <div class="flex justify-between py-2 border-b border-gray-800">
-                        <span class="text-gray-400">Instrumento principal</span>
+                        <span class="text-gray-400">Instrumento</span>
                         <span class="font-bold text-white capitalize">{{ user.instrumento }}</span>
                     </div>
                 </div>
-
+                
                 <div class="space-y-2">
-                    <button class="w-full bg-[#2A2A2A] hover:bg-[#3A3A3A] py-3 rounded flex justify-between px-4 text-sm font-medium transition group">
+                    <!-- BOTÓN PRINCIPAL DE CONFIGURACIÓN -->
+                    <button onclick="openModal('configModal')" class="w-full bg-[#2A2A2A] hover:bg-[#3A3A3A] py-3 rounded flex justify-between px-4 text-sm font-medium transition group text-gray-300 border border-transparent hover:border-gray-600">
                         <span>Configurar perfil</span>
-                        <span class="text-gray-500 group-hover:text-white">></span>
-                    </button>
-                    <button class="w-full bg-[#2A2A2A] hover:bg-[#3A3A3A] py-3 rounded flex justify-between px-4 text-sm font-medium transition group">
-                        <span>Cambiar contraseña</span>
-                        <span class="text-gray-500 group-hover:text-white">></span>
+                        <span class="text-gray-500 group-hover:text-white">⚙️</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Columna Derecha: Stats y Cursos (VACÍOS PARA NUEVO USUARIO) -->
+            <!-- CONTENIDO DERECHA (Stats y Cursos) -->
             <div class="lg:col-span-2 space-y-6">
+                <!-- Estado Vacío -->
+                <div class="bg-[#181818] p-8 rounded-xl border border-gray-800 min-h-[250px] flex flex-col justify-center items-center text-center">
+                    <div class="bg-[#222] p-4 rounded-full mb-4 shadow-inner">
+                        <span class="text-4xl">🎸</span>
+                    </div>
+                    <h5 class="font-bold text-xl mb-2 text-white">Tu viaje musical</h5>
+                    <p class="text-gray-400 text-sm max-w-sm mb-6 leading-relaxed">
+                        Aquí verás tu progreso. Por ahora, explora los cursos disponibles y empieza a aprender.
+                    </p>
+                    <a href="/cursos" class="bg-white text-black font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition transform hover:scale-105 shadow-lg text-sm">
+                        Explorar cursos
+                    </a>
+                </div>
                 
-                <!-- Stats Row: Todo en CERO -->
-                <div class="bg-[#181818] p-6 rounded-xl border border-gray-800">
-                    <h4 class="text-gray-200 font-bold mb-4">Resumen de aprendizaje</h4>
-                    <div class="grid grid-cols-3 gap-4 divide-x divide-gray-700">
-                        <div class="px-2">
-                            <p class="text-gray-400 text-xs mb-1">Cursos completados</p>
-                            <p class="text-2xl font-bold">0</p>
-                            <p class="text-gray-500 text-[10px]">Últimos 12 meses</p>
-                        </div>
-                        <div class="px-4">
-                            <p class="text-gray-400 text-xs mb-1">Cursos activos</p>
-                            <p class="text-2xl font-bold">0</p>
-                            <p class="text-gray-500 text-[10px]">En progreso</p>
-                        </div>
-                        <div class="px-4">
-                            <p class="text-gray-400 text-xs mb-1">Minutos estudiados</p>
-                            <p class="text-2xl font-bold">0</p>
-                            <p class="text-gray-500 text-[10px]">Total histórico</p>
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-[#181818] p-4 rounded-xl border border-gray-800">
+                        <h4 class="text-gray-400 text-xs uppercase font-bold mb-2">Nivel Actual</h4>
+                        <p class="text-2xl font-bold text-white">Principiante</p>
+                    </div>
+                    <div class="bg-[#181818] p-4 rounded-xl border border-gray-800">
+                        <h4 class="text-gray-400 text-xs uppercase font-bold mb-2">Racha de estudio</h4>
+                        <p class="text-2xl font-bold text-white">0 días</p>
                     </div>
                 </div>
-
-                <!-- Estado Vacío de Cursos -->
-                <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 min-h-[200px] flex flex-col justify-center items-center text-center">
-                    <div class="bg-[#222] p-4 rounded-full mb-4">
-                        <span class="text-3xl">🎸</span>
-                    </div>
-                    <h5 class="font-bold text-lg mb-2">Aún no tienes cursos</h5>
-                    <p class="text-gray-400 text-sm max-w-xs mb-4">¡Comienza tu aprendizaje hoy! Explora nuestra biblioteca de música regional.</p>
-                    <a href="/" class="bg-white text-black font-bold py-2 px-6 rounded-full hover:bg-gray-200 transition">Explorar cursos</a>
-                </div>
-
-                 <!-- Config Footer -->
-                 <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 space-y-4">
-                    <h4 class="text-gray-200 font-bold text-sm mb-2">Configuración del perfil</h4>
-                    
-                    <div class="flex justify-between items-center text-sm py-2">
-                        <div class="flex items-center gap-3">
-                            <span>🛡️</span>
-                            <div>
-                                <p class="font-medium">Privacidad</p>
-                                <p class="text-xs text-gray-500">Controla qué información muestras.</p>
-                            </div>
-                        </div>
-                        <span class="text-gray-400 text-xs">Amigos</span>
-                    </div>
-
-                    <div class="flex justify-between items-center text-sm py-2">
-                        <div class="flex items-center gap-3">
-                            <span>🎵</span>
-                            <div>
-                                <p class="font-medium">Instrumentos de interés</p>
-                                <p class="text-xs text-gray-500">Actualiza lo que deseas aprender.</p>
-                            </div>
-                        </div>
-                        <span class="text-gray-400 text-xs capitalize">{{ user.instrumento }}</span>
-                    </div>
-                </div>
-
             </div>
         </div>
     </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: CONFIGURACIÓN DE PERFIL -->
+    <!-- ========================================== -->
+    <div id="configModal" class="modal hidden-modal fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="modal-content bg-[#1E1E1E] w-full max-w-md rounded-2xl border border-gray-700 shadow-2xl overflow-hidden">
+            
+            <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-[#252525]">
+                <h3 class="text-lg font-bold text-white">Editar Perfil</h3>
+                <button onclick="closeModal('configModal')" class="text-gray-400 hover:text-white text-xl">✕</button>
+            </div>
+            
+            <form action="/actualizar-perfil" method="POST" class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Nombre</label>
+                        <input type="text" name="nombre" value="{{ user.nombre }}" class="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Apellido</label>
+                        <input type="text" name="apellido" value="{{ user.apellido }}" class="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Correo electrónico</label>
+                    <!-- Readonly porque el email es el ID -->
+                    <input type="email" value="{{ user.email }}" readonly class="w-full bg-[#111] border border-gray-800 rounded p-2.5 text-sm text-gray-500 cursor-not-allowed">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Teléfono</label>
+                    <input type="tel" name="telefono" value="{{ user.telefono }}" placeholder="+52..." class="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Nueva Contraseña (Opcional)</label>
+                    <input type="password" name="password" placeholder="Dejar en blanco para no cambiar" class="w-full bg-black border border-gray-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-green-900/20">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+
+            <div class="p-4 bg-[#151515] border-t border-gray-800 text-center">
+                <button onclick="openModal('deleteModal')" class="text-red-500 hover:text-red-400 text-xs font-bold uppercase tracking-wider py-2 transition hover:underline">
+                    Eliminar mi cuenta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 2: CONFIRMAR ELIMINACIÓN -->
+    <!-- ========================================== -->
+    <div id="deleteModal" class="modal hidden-modal fixed inset-0 bg-red-900/60 z-[70] flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="modal-content bg-[#1E1E1E] w-full max-w-sm rounded-2xl border border-red-500 shadow-2xl p-6 text-center">
+            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl border border-red-500/30">
+                ⚠️
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">¿Estás seguro?</h3>
+            <p class="text-gray-400 text-xs mb-6 leading-relaxed px-4">
+                Esta acción es <span class="text-red-400 font-bold">irreversible</span>. Perderás acceso a tus cursos, progreso, certificados y configuración de pago.
+            </p>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeModal('deleteModal')" class="bg-[#2A2A2A] hover:bg-[#333] text-white py-2.5 rounded-lg font-bold text-sm transition">Cancelar</button>
+                <form action="/eliminar-cuenta" method="POST">
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-bold text-sm transition shadow-lg shadow-red-900/30">Si, eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- SIDEBAR ---
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const logoText = document.getElementById('logoText');
+        const libTitle = document.getElementById('libTitle');
+        const navTexts = document.querySelectorAll('.nav-text');
+        let isCollapsed = false;
+
+        toggleBtn.addEventListener('click', () => {
+            isCollapsed = !isCollapsed;
+            if (isCollapsed) {
+                sidebar.classList.remove('w-64'); sidebar.classList.add('w-20', 'items-center');
+                logoText.classList.add('hidden');
+                libTitle.classList.add('hidden');
+                navTexts.forEach(t => t.classList.add('hidden'));
+            } else {
+                sidebar.classList.remove('w-20', 'items-center'); sidebar.classList.add('w-64');
+                logoText.classList.remove('hidden');
+                libTitle.classList.remove('hidden');
+                navTexts.forEach(t => t.classList.remove('hidden'));
+            }
+        });
+
+        // --- DROPDOWN ---
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const arrow = document.getElementById('userMenuArrow');
+
+        if(userMenuBtn) {
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+                if(userDropdown.classList.contains('hidden')){
+                    arrow.style.transform = 'rotate(0deg)';
+                } else {
+                    arrow.style.transform = 'rotate(180deg)';
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.add('hidden');
+                    if(arrow) arrow.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+
+        // --- LÓGICA DE MODALES ---
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('hidden-modal');
+            // Timeout pequeño para permitir que la animación CSS ocurra
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.classList.add('hidden-modal');
+            }, 300); // Esperar a que termine la transición de 0.3s
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
