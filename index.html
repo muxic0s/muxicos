@@ -6,130 +6,201 @@
     <title>Muxicos - Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Personalización para ocultar scrollbar pero permitir scroll */
+        /* Ocultar barra de scroll pero permitir deslizamiento */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Animación Fade para el Slider */
+        .slide { transition: opacity 1s ease-in-out; position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+        .slide.active { opacity: 1; z-index: 10; pointer-events: auto; }
     </style>
 </head>
 <body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-black flex flex-col p-6 space-y-8 flex-shrink-0">
-        <h1 class="text-2xl font-bold tracking-tight">Muxicos</h1>
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-black flex flex-col p-6 space-y-8 flex-shrink-0 border-r border-gray-800">
+        <h1 class="text-2xl font-bold tracking-tight flex items-center gap-2">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            Muxicos
+        </h1>
         
         <nav class="space-y-4 text-gray-400 text-sm font-medium">
             <div class="space-y-2">
-                <input type="text" placeholder="Buscar cursos..." class="w-full bg-[#2A2A2A] text-white p-2 rounded text-xs focus:outline-none">
+                <!-- Buscador rápido (Visual, lleva a cursos) -->
+                <form action="/cursos" method="GET">
+                    <input type="text" placeholder="Buscar cursos..." class="w-full bg-[#2A2A2A] text-white p-2 rounded text-xs focus:outline-none focus:ring-1 focus:ring-green-500 transition">
+                </form>
             </div>
 
             <div class="pt-4 space-y-1">
                 <a href="/" class="flex items-center gap-3 text-white bg-[#282828] p-2 rounded hover:bg-[#282828] transition">
                     <span>🏠</span> Home
                 </a>
-                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">
+                <a href="/cursos" class="flex items-center gap-3 hover:text-white p-2 transition">
                     <span>📚</span> Cursos
                 </a>
                 <a href="/perfil" class="flex items-center gap-3 hover:text-white p-2 transition">
                     <span>👤</span> Perfil
                 </a>
-                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">
-                    <span>👥</span> Maestros
-                </a>
             </div>
 
             <div class="pt-4">
                 <h3 class="uppercase text-xs font-bold text-gray-500 mb-2">Biblioteca</h3>
-                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">🎸 Guitarra</a>
-                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">🎹 Acordeón</a>
-                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">🎻 Tololoche</a>
+                <!-- Estos filtros podrían llevar a la página de cursos con filtro pre-cargado en el futuro -->
+                <a href="/cursos" class="flex items-center gap-3 hover:text-white p-2 transition">🎸 Guitarra</a>
+                <a href="/cursos" class="flex items-center gap-3 hover:text-white p-2 transition">🎹 Acordeón</a>
+                <a href="/cursos" class="flex items-center gap-3 hover:text-white p-2 transition">🎻 Tololoche</a>
             </div>
         </nav>
     </aside>
 
-    <!-- Contenido Principal -->
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="flex-1 overflow-y-auto bg-[#121212] p-8 no-scrollbar relative">
         
-        <!-- HEADER INTELIGENTE -->
-        <header class="flex justify-between items-center mb-6">
-            <div class="flex gap-2">
-                <button class="bg-black/50 p-2 rounded-full rounded-l hover:bg-black transition">ᐸ</button>
-                <button class="bg-black/50 p-2 rounded-full rounded-r hover:bg-black transition">ᐳ</button>
-            </div>
-
+        <!-- HEADER -->
+        <header class="flex justify-end items-center mb-6">
             <div class="flex items-center gap-4">
-                <!-- LÓGICA JINJA2: Verificamos si existe 'usuario' -->
+                <!-- LÓGICA DE USUARIO -->
                 {% if usuario %}
-                    <!-- ESTADO LOGUEADO: Muestra Avatar y Nombre -->
                     <a href="/perfil" class="flex items-center gap-3 hover:bg-[#282828] p-1 pr-4 rounded-full transition group">
-                        <!-- Círculo con la inicial del nombre -->
+                        <!-- Avatar con inicial -->
                         <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-xs border border-white group-hover:scale-105 transition">
                             {{ usuario.nombre[0] | upper }} 
                         </div>
                         <span class="text-sm font-bold text-white hidden sm:block group-hover:text-green-400 transition">{{ usuario.nombre }}</span>
                     </a>
-                    <!-- Botón de Salir -->
                     <a href="/logout" class="text-xs text-gray-400 hover:text-white transition border border-gray-700 px-2 py-1 rounded" title="Cerrar sesión">Salir</a>
                 {% else %}
-                    <!-- ESTADO VISITANTE: Muestra botones originales -->
                     <a href="login.html" class="text-sm font-bold text-gray-300 hover:text-white">Log in</a>
                     <a href="registro.html" class="text-sm font-bold bg-white text-black px-4 py-2 rounded-full hover:scale-105 transition">Sign up</a>
                 {% endif %}
             </div>
         </header>
 
-        <!-- Hero Banner -->
-        <div class="relative w-full h-80 bg-gradient-to-r from-red-900 to-black rounded-lg mb-10 overflow-hidden flex items-end p-8">
-            <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549834125-824b47d83d10?q=80&w=2938&auto=format&fit=crop')] bg-cover bg-center opacity-40"></div>
+        <!-- BANNER CARRUSEL (SLIDER) -->
+        <div class="relative w-full h-80 rounded-2xl mb-10 overflow-hidden bg-gray-900 group shadow-2xl">
             
-            <div class="relative z-10 max-w-xl">
-                <span class="text-xs font-bold uppercase tracking-wider mb-2 block">Curso Destacado</span>
-                <h2 class="text-5xl font-black mb-4">Norteño Guitar Foundations</h2>
-                <p class="text-gray-300 mb-6 text-sm">Aprende los rasgueos clásicos, bajos y progresiones con el Maestro Luis.</p>
-                <div class="flex gap-4">
-                    <a href="detalle.html" class="bg-white text-black font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition">Comenzar</a>
-                    <button class="bg-gray-800/80 text-white font-bold py-3 px-8 rounded-full hover:bg-gray-700 transition">Añadir a lista</button>
+            {% if banners %}
+                <!-- Bucle para generar los Slides -->
+                {% for banner in banners %}
+                <div class="slide {{ 'active' if loop.first else '' }}" id="slide-{{ loop.index0 }}">
+                    <!-- Imagen de Fondo -->
+                    <div class="absolute inset-0 bg-cover bg-center transition duration-700 transform group-hover:scale-105" 
+                         style="background-image: url('{{ banner.img }}');"></div>
+                    <!-- Gradiente Oscuro -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
+                    
+                    <!-- Contenido del Banner -->
+                    <div class="relative z-20 h-full flex flex-col justify-end p-10 max-w-2xl">
+                        <!-- Tag/Etiqueta -->
+                        <span class="inline-block px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-4 w-fit shadow-md
+                                     {{ 'bg-green-500 text-black' if banner.color == 'green' else 'bg-yellow-500 text-black' if banner.color == 'yellow' else 'bg-purple-600 text-white' }}">
+                            {{ banner.tag }}
+                        </span>
+                        <h2 class="text-4xl md:text-5xl font-black mb-4 leading-tight drop-shadow-xl">{{ banner.titulo }}</h2>
+                        <p class="text-gray-200 mb-8 text-sm drop-shadow-md max-w-lg">{{ banner.desc }}</p>
+                        <div class="flex gap-4">
+                            <a href="/cursos" class="bg-white text-black font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition transform hover:scale-105 shadow-lg">Ver más</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                {% endfor %}
+
+                <!-- Indicadores (Puntitos) -->
+                <div class="absolute bottom-6 right-8 z-30 flex gap-2">
+                    {% for banner in banners %}
+                    <button class="w-2 h-2 rounded-full bg-white/50 hover:bg-white transition indicator {{ 'bg-white' if loop.first else '' }}" onclick="changeSlide({{ loop.index0 }})"></button>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="absolute inset-0 flex items-center justify-center text-gray-500">Cargando destacados...</div>
+            {% endif %}
         </div>
 
-        <!-- Section: New Courses -->
+        <!-- SECCIÓN: AGREGADOS RECIENTEMENTE (GRID) -->
         <section class="mb-10">
-            <h3 class="text-xl font-bold mb-4">Nuevos Cursos</h3>
+            <div class="flex justify-between items-end mb-4">
+                <h3 class="text-xl font-bold">Agregados Recientemente</h3>
+                <a href="/cursos" class="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-wide transition">Ver todo →</a>
+            </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Card 1 -->
-                <div class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group">
-                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=500&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                {% if cursos %}
+                    {% for curso in cursos %}
+                    <!-- TARJETA DE CURSO (Enlace al reproductor) -->
+                    <a href="/curso/{{ curso[0] }}" class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group flex flex-col h-full border border-transparent hover:border-gray-800 block">
+                        <!-- Thumbnail -->
+                        <div class="h-36 bg-gray-700 rounded mb-4 overflow-hidden relative shadow-lg">
+                            <img src="{{ curso[3] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90 group-hover:opacity-100">
+                            <!-- Botón Play Hover -->
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black/40">
+                                <div class="bg-green-500 text-black rounded-full p-2 shadow-lg transform scale-0 group-hover:scale-100 transition duration-300 delay-75">
+                                    <svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Info -->
+                        <h4 class="font-bold mb-1 text-sm line-clamp-1 group-hover:text-green-400 transition">{{ curso[1] }}</h4>
+                        <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-gray-600 inline-block"></span> 
+                            {{ curso[5] }} <!-- Maestro -->
+                        </p>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <!-- Estado vacío -->
+                    <div class="col-span-full py-10 text-center border border-dashed border-gray-800 rounded-xl">
+                        <p class="text-gray-500 text-sm">Aún no hay cursos recientes.</p>
+                        <a href="/admin" class="text-xs text-green-500 hover:underline mt-2 inline-block">Ir al Admin Panel</a>
                     </div>
-                    <h4 class="font-bold mb-1">Ritmos de Guitarra</h4>
-                    <p class="text-xs text-gray-400">Por Ana López • 10 lecciones</p>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group">
-                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1627832811394-b2586e376043?w=500&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                    </div>
-                    <h4 class="font-bold mb-1">Acordeón Esencial</h4>
-                    <p class="text-xs text-gray-400">Por Paco M. • 8 lecciones</p>
-                </div>
-                <!-- Card 3 -->
-                <div class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group">
-                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1575672288126-5b9101895a63?w=500&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                    </div>
-                    <h4 class="font-bold mb-1">Tololoche Grooves</h4>
-                    <p class="text-xs text-gray-400">Por Sofía Reyes • 9 lecciones</p>
-                </div>
-                <!-- Card 4 -->
-                <div class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group">
-                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1516280440614-6697288d5d38?w=500&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                    </div>
-                    <h4 class="font-bold mb-1">Vocalización</h4>
-                    <p class="text-xs text-gray-400">Por Diego Cruz • 6 lecciones</p>
-                </div>
+                {% endif %}
             </div>
         </section>
+
     </main>
+
+    <!-- SCRIPT DEL CARRUSEL AUTOMÁTICO -->
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            if (slides.length === 0) return;
+
+            // Ocultar todos
+            slides.forEach(s => s.classList.remove('active'));
+            indicators.forEach(i => i.classList.remove('bg-white'));
+            indicators.forEach(i => i.classList.add('bg-white/50'));
+
+            // Mostrar actual
+            slides[index].classList.add('active');
+            // Aseguramos que el indicador exista antes de acceder a su classList
+            if(indicators[index]) {
+                indicators[index].classList.remove('bg-white/50');
+                indicators[index].classList.add('bg-white');
+            }
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            let next = (currentSlide + 1) % totalSlides;
+            showSlide(next);
+        }
+
+        // Iniciar rotación si hay slides
+        if (totalSlides > 0) {
+            let slideInterval = setInterval(nextSlide, 5000); // Cambio cada 5 segundos
+
+            // Función global para los puntitos (onClick)
+            window.changeSlide = function(index) {
+                clearInterval(slideInterval); // Pausar timer
+                showSlide(index);
+                slideInterval = setInterval(nextSlide, 5000); // Reiniciar timer
+            }
+        }
+    </script>
 </body>
 </html>

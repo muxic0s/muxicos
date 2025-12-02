@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muxicos - Explorar Cursos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Animación suave para las tarjetas */
+        .course-card { transition: all 0.3s ease; }
+        .course-card.hidden-card { display: none; }
+    </style>
+</head>
+<body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
+
+    <!-- Sidebar (Mismo diseño que Home) -->
+    <aside class="w-64 bg-black flex flex-col p-6 space-y-8 flex-shrink-0 border-r border-gray-800">
+        <h1 class="text-2xl font-bold tracking-tight flex items-center gap-2">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            Muxicos
+        </h1>
+        
+        <nav class="space-y-4 text-gray-400 text-sm font-medium">
+            <div class="pt-4 space-y-1">
+                <a href="/" class="flex items-center gap-3 hover:text-white p-2 rounded transition">
+                    <span>🏠</span> Home
+                </a>
+                <a href="/cursos" class="flex items-center gap-3 text-white bg-[#282828] p-2 rounded transition">
+                    <span>📚</span> Cursos
+                </a>
+                <a href="/perfil" class="flex items-center gap-3 hover:text-white p-2 rounded transition">
+                    <span>👤</span> Perfil
+                </a>
+            </div>
+
+            <div class="pt-4">
+                <h3 class="uppercase text-xs font-bold text-gray-500 mb-2">Tu biblioteca</h3>
+                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">❤️ Favoritos</a>
+                <a href="#" class="flex items-center gap-3 hover:text-white p-2 transition">🕒 Ver más tarde</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 no-scrollbar relative">
+        
+        <!-- Header con Buscador -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-bold">Explorar Biblioteca</h2>
+                <p class="text-gray-400 text-sm mt-1">Encuentra el curso perfecto para ti</p>
+            </div>
+            
+            <div class="relative w-full md:w-96">
+                <!-- ID searchInput para el JS -->
+                <input type="text" id="searchInput" placeholder="Buscar por título, maestro o instrumento..." 
+                       class="w-full bg-[#1E1E1E] border border-gray-700 text-white pl-10 p-3 rounded-full text-sm focus:outline-none focus:border-green-500 transition placeholder-gray-500">
+                <span class="absolute left-4 top-3.5 text-gray-500">🔍</span>
+            </div>
+        </header>
+
+        <!-- Filtros (Chips) -->
+        <!-- ID filters para el JS -->
+        <div class="flex flex-wrap gap-3 mb-8" id="filters">
+            <button class="filter-btn active bg-white text-black px-4 py-1.5 rounded-full text-xs font-bold transition border border-white" data-filter="all">Todos</button>
+            <button class="filter-btn bg-[#1E1E1E] hover:bg-[#333] text-gray-300 px-4 py-1.5 rounded-full text-xs font-bold transition border border-gray-700" data-filter="guitarra">Guitarra</button>
+            <button class="filter-btn bg-[#1E1E1E] hover:bg-[#333] text-gray-300 px-4 py-1.5 rounded-full text-xs font-bold transition border border-gray-700" data-filter="acordeon">Acordeón</button>
+            <button class="filter-btn bg-[#1E1E1E] hover:bg-[#333] text-gray-300 px-4 py-1.5 rounded-full text-xs font-bold transition border border-gray-700" data-filter="tololoche">Tololoche</button>
+            <button class="filter-btn bg-[#1E1E1E] hover:bg-[#333] text-gray-300 px-4 py-1.5 rounded-full text-xs font-bold transition border border-gray-700" data-filter="teoria">Teoría</button>
+        </div>
+
+        <!-- Grid de Cursos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="coursesGrid">
+            
+            {% if cursos %}
+                {% for curso in cursos %}
+                <!-- TARJETA DE CURSO -->
+                <!-- Agregamos data-attributes para que el buscador pueda leer el contenido oculto -->
+                <div class="course-card bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group flex flex-col h-full border border-transparent hover:border-gray-700"
+                     data-title="{{ curso[1] | lower }}" 
+                     data-maestro="{{ curso[5] | lower }}"
+                     data-desc="{{ curso[4] | lower }}">
+                    
+                    <!-- Imagen -->
+                    <div class="h-40 bg-gray-700 rounded mb-4 overflow-hidden relative shadow-lg">
+                        <img src="{{ curso[3] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90 group-hover:opacity-100" loading="lazy">
+                        
+                        <!-- Overlay Play -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black/40">
+                            <div class="bg-green-500 text-black rounded-full p-3 shadow-lg transform scale-0 group-hover:scale-100 transition duration-300 delay-75">
+                                <svg class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Info -->
+                    <h4 class="font-bold mb-1 text-sm line-clamp-2 leading-snug group-hover:text-green-400 transition">{{ curso[1] }}</h4>
+                    <p class="text-xs text-gray-400 mt-1 mb-2 flex items-center gap-1">
+                        <span>👨‍🏫</span> {{ curso[5] }}
+                    </p>
+                    
+                    <p class="text-[10px] text-gray-500 line-clamp-2 mt-auto">{{ curso[4] }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-full text-center py-20 text-gray-500">
+                    <p>No hay cursos disponibles aún. Visita el Admin Panel para agregar contenido.</p>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Mensaje "No encontrado" (Oculto por defecto) -->
+        <div id="noResults" class="hidden text-center py-20">
+            <div class="text-4xl mb-4 opacity-50">🔍</div>
+            <h3 class="text-xl font-bold text-gray-400">No encontramos cursos</h3>
+            <p class="text-gray-600 text-sm mt-2">Intenta con otros términos o filtros.</p>
+            <button onclick="resetFilters()" class="mt-4 text-green-500 text-sm hover:underline">Limpiar búsqueda</button>
+        </div>
+
+    </main>
+
+    <!-- LÓGICA DE FILTRADO (JAVASCRIPT) -->
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const courseCards = document.querySelectorAll('.course-card');
+        const noResults = document.getElementById('noResults');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        // Función principal de filtrado
+        function filterCourses() {
+            const searchTerm = searchInput.value.toLowerCase();
+            // Buscar cuál es el botón activo (filtro actual)
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const activeFilter = activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+            
+            let visibleCount = 0;
+
+            courseCards.forEach(card => {
+                const title = card.getAttribute('data-title');
+                const maestro = card.getAttribute('data-maestro');
+                const desc = card.getAttribute('data-desc');
+                
+                // 1. Checar Texto (Buscador)
+                const matchesSearch = title.includes(searchTerm) || maestro.includes(searchTerm) || desc.includes(searchTerm);
+                
+                // 2. Checar Categoría (Botones)
+                // Nota: Esto es un filtro "suave" buscando palabras clave en el título/descripción
+                // porque aún no tenemos columna "categoría" en la BD.
+                let matchesFilter = true;
+                if (activeFilter !== 'all') {
+                    // Quitamos acentos para comparar fácil (ej: acordeón -> acordeon)
+                    const contentToCheck = (title + ' ' + desc).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    matchesFilter = contentToCheck.includes(activeFilter);
+                }
+
+                if (matchesSearch && matchesFilter) {
+                    card.style.display = 'flex'; // Mostrar
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none'; // Ocultar
+                }
+            });
+
+            // Mostrar mensaje si todo está oculto
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+
+        // Evento: Escribir en el buscador
+        searchInput.addEventListener('input', filterCourses);
+
+        // Evento: Clic en filtros
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Cambiar estilos visuales
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-white', 'text-black', 'border-white');
+                    b.classList.add('bg-[#1E1E1E]', 'text-gray-300', 'border-gray-700');
+                });
+                btn.classList.add('active', 'bg-white', 'text-black', 'border-white');
+                btn.classList.remove('bg-[#1E1E1E]', 'text-gray-300', 'border-gray-700');
+
+                // Filtrar
+                filterCourses();
+            });
+        });
+
+        function resetFilters() {
+            searchInput.value = '';
+            // Resetear botón a "Todos"
+            filterBtns[0].click(); 
+        }
+    </script>
+</body>
+</html>
