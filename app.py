@@ -103,13 +103,6 @@ def ver_curso(id_curso):
     else:
         return "Curso no encontrado", 404
 
-# --- NUEVA RUTA: CONFIGURACIÓN ---
-@app.route('/config')
-def config_page():
-    if 'usuario' not in session: return redirect('/login.html')
-    # Renderizamos la vista de configuración pasando el usuario
-    return render_template('config.html', user=session['usuario'])
-
 # ==========================================
 # GESTIÓN DE PERFIL
 # ==========================================
@@ -237,6 +230,11 @@ def logout():
     session.clear()
     return redirect('/')
 
+@app.route('/config')
+def config_page():
+    if 'usuario' not in session: return redirect('/login.html')
+    return render_template('config.html', user=session['usuario'])
+
 @app.route('/registrar-usuario', methods=['POST'])
 def registrar_usuario():
     try:
@@ -249,12 +247,17 @@ def registrar_usuario():
         pwd_hash = pbkdf2_sha256.hash(password)
         conn = get_db_connection()
         cur = conn.cursor()
+        
+        # Verificar tabla V5 con todos los campos
         cur.execute('''CREATE TABLE IF NOT EXISTS usuarios_v5 
                        (id SERIAL PRIMARY KEY, username TEXT, nombre TEXT, apellido TEXT, 
                         email TEXT, password_hash TEXT, instrumento TEXT, telefono TEXT, foto_url TEXT);''')
-        cur.execute('''INSERT INTO usuarios_v5 (username, nombre, apellido, email, password_hash, instrumento) 
+        
+        # CORRECCIÓN: Agregamos telefono y foto_url en el INSERT
+        cur.execute('''INSERT INTO usuarios_v5 (username, nombre, apellido, email, password_hash, instrumento, telefono, foto_url) 
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', 
                     (username, nombre, apellido, email, pwd_hash, instrumento, '', ''))
+        
         conn.commit()
         cur.close()
         conn.close()
