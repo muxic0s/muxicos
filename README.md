@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="8eecb000-e7b4-4027-a763-ab7774b8e575.png" width="420" alt="Muxicos Logo">
+  <img src="/workspaces/muxicos/logo.png" width="420" alt="Muxicos Logo">
 </p>
 
 <h1 align="center">🎸 Muxicos</h1>
@@ -68,31 +68,31 @@ Su espíritu es simple: **hacer accesible el aprendizaje musical con una experie
 ```bash
 git clone https://github.com/tu-usuario/muxicos.git
 cd muxicos
+```
 
- 2. Instalar depencias
+### 2. Instalar depencias
 ```bash
 pip install -r requirements.txt
+```
 
-3. Crear archivo .env
+### 3. Crear archivo .env
+```bash
 DATABASE_URL=postgresql://usuario:password@ep-cool-db.us-east-2.aws.neon.tech/neondb
+```
 
-4. Ejecutar el servidor
+### 4. Ejecutar el servidor
+```bash
 python app.py
 La app correrá en: http://localhost:8000
+```
 
-📂 Estructura del Proyecto
+```bash
 muxicos/
 ├── app.py
 ├── requirements.txt
-├── .env
 ├── templates/
 │   ├── bienvenida.html
 │   ├── index.html
-│   ├── login.html
-│   ├── registro.html
-│   ├── perfil.html
-│   ├── cursos.html
-│   ├── detalle.html
-│   ├── config.html
 │   └── admin.html
 └── README.md
+```
