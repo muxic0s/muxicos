@@ -69,7 +69,8 @@ Su espíritu es simple: **hacer accesible el aprendizaje musical con una experie
 git clone https://github.com/tu-usuario/muxicos.git
 cd muxicos
 
-2. Instalar dependencias
+ 2. Instalar depencias
+```bash
 pip install -r requirements.txt
 
 3. Crear archivo .env
