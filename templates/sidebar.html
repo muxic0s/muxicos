@@ -1,0 +1,103 @@
+<aside id="sidebar" class="w-64 bg-black flex flex-col p-4 space-y-8 flex-shrink-0 border-r border-gray-800 transition-all duration-300 ease-in-out h-screen sticky top-0 z-50">
+    <div class="flex items-center justify-between h-10">
+        <div class="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+            <svg class="w-8 h-8 fill-current text-white flex-shrink-0" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            <span id="logoText" class="text-xl font-bold tracking-tight transition-opacity duration-200">Muxicos</span>
+        </div>
+        <button id="toggleBtn" class="text-gray-400 hover:text-white p-1 rounded hover:bg-gray-800 transition focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+    </div>
+    
+    <nav class="space-y-2 text-gray-400 text-sm font-medium flex-1 overflow-y-auto no-scrollbar">
+        <div class="space-y-1">
+            <a href="/" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Home">
+                <span class="text-xl flex-shrink-0">🏠</span> <span class="nav-text">Home</span>
+            </a>
+            <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Cursos">
+                <span class="text-xl flex-shrink-0">📚</span> <span class="nav-text">Cursos</span>
+            </a>
+            <a href="#" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap opacity-50 cursor-not-allowed" title="Favoritos">
+                <span class="text-xl flex-shrink-0">❤️</span> <span class="nav-text">Favoritos</span>
+            </a>
+        </div>
+
+        <div class="pt-4 border-t border-gray-800 mt-4">
+            <h3 id="libTitle" class="uppercase text-[10px] font-bold text-gray-600 mb-2 px-1 whitespace-nowrap">Biblioteca</h3>
+            <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
+                <span class="text-xl flex-shrink-0">🎸</span> <span class="nav-text">Guitarra</span>
+            </a>
+            <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
+                <span class="text-xl flex-shrink-0">🎹</span> <span class="nav-text">Acordeón</span>
+            </a>
+            <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
+                <span class="text-xl flex-shrink-0">🎻</span> <span class="nav-text">Tololoche</span>
+            </a>
+        </div>
+
+        {% if usuario and usuario.rol == 'admin' %}
+        <div class="pt-4 border-t border-gray-800 mt-4 bg-red-900/10 rounded-xl p-2 border border-red-900/30">
+            <h3 id="adminTitle" class="uppercase text-[10px] font-bold text-red-500 mb-2 px-1 whitespace-nowrap flex items-center gap-2">
+                <span>🛡️</span> <span class="nav-text">Admin Zone</span>
+            </h3>
+            <a href="/admin" class="flex items-center gap-4 text-red-200 hover:text-white hover:bg-red-900/50 p-3 rounded transition group overflow-hidden whitespace-nowrap">
+                <span class="text-xl flex-shrink-0">⚙️</span> <span class="nav-text">Panel Control</span>
+            </a>
+        </div>
+        {% endif %}
+    </nav>
+    
+    </aside>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const logoText = document.getElementById('logoText');
+        const libTitle = document.getElementById('libTitle');
+        const adminTitle = document.getElementById('adminTitle');
+        const navTexts = document.querySelectorAll('.nav-text');
+
+        // Recuperar estado de la memoria
+        let isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+        function updateSidebar() {
+            if(isCollapsed) { 
+                sidebar.classList.remove('w-64'); 
+                sidebar.classList.add('w-20'); 
+                
+                // Ocultar textos
+                if(logoText) logoText.classList.add('hidden'); 
+                if(libTitle) libTitle.classList.add('hidden');
+                if(adminTitle) {
+                    const spanText = adminTitle.querySelector('.nav-text');
+                    if(spanText) spanText.classList.add('hidden');
+                }
+                navTexts.forEach(el => el.classList.add('hidden'));
+            } else { 
+                sidebar.classList.remove('w-20'); 
+                sidebar.classList.add('w-64'); 
+                
+                // Mostrar textos
+                if(logoText) logoText.classList.remove('hidden'); 
+                if(libTitle) libTitle.classList.remove('hidden');
+                if(adminTitle) {
+                    const spanText = adminTitle.querySelector('.nav-text');
+                    if(spanText) spanText.classList.remove('hidden');
+                }
+                navTexts.forEach(el => el.classList.remove('hidden'));
+            }
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        }
+
+        // Ejecutar al cargar
+        updateSidebar();
+
+        if(toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                isCollapsed = !isCollapsed;
+                updateSidebar();
+            });
+        }
+    });
+</script>

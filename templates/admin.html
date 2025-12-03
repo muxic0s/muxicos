@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Muxicos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#121212] text-white font-sans min-h-screen flex overflow-hidden">
+
+    {% include 'sidebar.html' %}
+
+    <main class="flex-1 flex items-center justify-center p-6 overflow-y-auto w-full no-scrollbar relative font-mono">
+        
+        <div class="w-full max-w-2xl bg-[#050505] border border-green-900/50 p-8 rounded-xl shadow-[0_0_50px_rgba(0,255,0,0.05)]">
+            <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+                <h1 class="text-xl font-bold text-green-500 flex items-center gap-2">
+                    <span class="animate-pulse">_></span> SYSTEM_ADMIN_PANEL
+                </h1>
+                <span class="text-[10px] text-gray-600 uppercase tracking-widest">v.1.0.5 secure_mode</span>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-6 p-4 rounded bg-gray-900 border-l-4 {{ 'border-green-500 text-green-400' if category == 'success' else 'border-red-500 text-red-400' }}">
+                            <span class="font-bold mr-2">{{ 'OK:' if category == 'success' else 'ERR:' }}</span> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="/admin/agregar" method="POST" class="space-y-6">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-2 uppercase tracking-widest">YouTube URL (Auto-Scraper)</label>
+                    <div class="flex gap-2">
+                        <input type="text" name="url_video" required placeholder="https://www.youtube.com/watch?v=..." 
+                               class="flex-1 bg-black border border-gray-800 p-3 rounded text-green-500 focus:border-green-500 focus:outline-none transition font-mono text-sm placeholder-gray-800">
+                        
+                        <button type="submit" class="bg-green-700 hover:bg-green-600 text-black font-bold px-6 rounded transition uppercase text-xs tracking-wider">
+                            Execute
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-gray-700 mt-2 font-sans">* El sistema extraerá título, miniatura y autor automáticamente.</p>
+                </div>
+            </form>
+
+            <div class="mt-12 pt-6 border-t border-gray-900">
+                <h3 class="text-xs text-gray-500 mb-4 uppercase tracking-widest flex justify-between">
+                    <span>Base de Datos</span>
+                    <span>{{ cursos|length }} registros</span>
+                </h3>
+                
+                <div class="space-y-2 max-h-80 overflow-y-auto pr-2 custom-scroll">
+                    {% if cursos %}
+                        {% for curso in cursos %}
+                        <div class="flex items-center justify-between bg-[#0a0a0a] p-3 rounded border border-gray-900 hover:border-gray-700 transition group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded overflow-hidden relative">
+                                    <img src="{{ curso[3] }}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition">
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-gray-400 group-hover:text-green-400 truncate w-64 transition">{{ curso[1] }}</p>
+                                    <p class="text-[10px] text-gray-700 font-sans">ID: {{ curso[0] }} | {{ curso[5] }}</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-green-900 bg-green-900/10 border border-green-900/30 px-2 py-1 rounded">200 OK</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-8 text-gray-800">
+                            <p class="text-xs italic">_NO_DATA_FOUND_</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

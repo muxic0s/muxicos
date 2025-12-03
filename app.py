@@ -11,9 +11,7 @@ from urllib.parse import urlparse, parse_qs
 # Cargamos variables de entorno (.env)
 load_dotenv()
 
-app = Flask(__name__, template_folder='.')
-
-# --- CONFIGURACIÓN DE SESIÓN ---
+app = Flask(__name__) # Corrección: Ya no usamos template_folder='.' porque tienes la carpeta templates/
 app.secret_key = 'clave_super_secreta_muxicos_2025'
 
 # --- DATOS DEL BANNER ---
@@ -53,20 +51,18 @@ def obtener_id_video(url):
 
 @app.route('/')
 def home():
-    if 'usuario' in session:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        try:
-            cur.execute("SELECT * FROM cursos ORDER BY id DESC LIMIT 4")
-            cursos = cur.fetchall()
-        except:
-            cursos = []
-            conn.rollback()
-        cur.close()
-        conn.close()
-        return render_template('index.html', usuario=session['usuario'], cursos=cursos, banners=BANNERS)
-    else:
-        return render_template('bienvenida.html')
+    usuario = session.get('usuario')
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT * FROM cursos ORDER BY id DESC LIMIT 4")
+        cursos = cur.fetchall()
+    except:
+        cursos = []
+        conn.rollback()
+    cur.close()
+    conn.close()
+    return render_template('index.html', usuario=usuario, cursos=cursos, banners=BANNERS)
 
 @app.route('/cursos')
 def cursos_page():
@@ -104,8 +100,14 @@ def ver_curso(id_curso):
         return "Curso no encontrado", 404
 
 # ==========================================
-# GESTIÓN DE PERFIL
+# GESTIÓN DE PERFIL (AQUÍ ESTABA EL ERROR)
 # ==========================================
+
+@app.route('/perfil')
+def perfil_page():
+    if 'usuario' not in session: return redirect('/login.html')
+    # CORRECCIÓN IMPORTANTE: Cambiamos 'user' por 'usuario'
+    return render_template('perfil.html', usuario=session['usuario'])
 
 @app.route('/actualizar-perfil', methods=['POST'])
 def actualizar_perfil():
@@ -178,18 +180,29 @@ def eliminar_cuenta():
 
 @app.route('/admin')
 def admin_page():
+    if 'usuario' not in session: return redirect('/login.html')
+    rol_actual = session['usuario'].get('rol', 'user')
+    
+    if rol_actual != 'admin':
+        flash("⚠️ Acceso Denegado: Se requieren permisos de administrador.", "error")
+        return redirect('/perfil')
+
     conn = get_db_connection()
     cur = conn.cursor()
+    # Nos aseguramos que la tabla cursos exista
     cur.execute('''CREATE TABLE IF NOT EXISTS cursos (id SERIAL PRIMARY KEY, titulo TEXT, url_video TEXT, url_image TEXT, descripcion TEXT, maestro TEXT);''')
     conn.commit()
     cur.execute("SELECT * FROM cursos ORDER BY id DESC")
     cursos = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('admin.html', cursos=cursos)
+    return render_template('admin.html', usuario=session['usuario'], cursos=cursos)
 
 @app.route('/admin/agregar', methods=['POST'])
 def agregar_curso():
+    if 'usuario' not in session or session['usuario'].get('rol') != 'admin':
+        return redirect('/')
+
     url_video = request.form['url_video']
     try:
         api_url = f"https://noembed.com/embed?url={url_video}"
@@ -205,6 +218,7 @@ def agregar_curso():
         conn.commit()
         cur.close()
         conn.close()
+        flash("Curso agregado exitosamente.", "success")
         return redirect('/admin')
     except: return redirect('/admin')
 
@@ -220,11 +234,6 @@ def detalle_page(): return redirect('/')
 @app.route('/exito.html')
 def exito_page(): return render_template('exito.html')
 
-@app.route('/perfil')
-def perfil_page():
-    if 'usuario' not in session: return redirect('/login.html')
-    return render_template('perfil.html', user=session['usuario'])
-
 @app.route('/logout')
 def logout():
     session.clear()
@@ -233,7 +242,7 @@ def logout():
 @app.route('/config')
 def config_page():
     if 'usuario' not in session: return redirect('/login.html')
-    return render_template('config.html', user=session['usuario'])
+    return render_template('config.html', usuario=session['usuario'])
 
 @app.route('/registrar-usuario', methods=['POST'])
 def registrar_usuario():
@@ -248,20 +257,24 @@ def registrar_usuario():
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # Verificar tabla V5 con todos los campos
-        cur.execute('''CREATE TABLE IF NOT EXISTS usuarios_v5 
-                       (id SERIAL PRIMARY KEY, username TEXT, nombre TEXT, apellido TEXT, 
-                        email TEXT, password_hash TEXT, instrumento TEXT, telefono TEXT, foto_url TEXT);''')
-        
-        # CORRECCIÓN: Agregamos telefono y foto_url en el INSERT
-        cur.execute('''INSERT INTO usuarios_v5 (username, nombre, apellido, email, password_hash, instrumento, telefono, foto_url) 
-                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', 
+        # INSERT coincidiendo con tu CSV: rol incluido
+        cur.execute('''INSERT INTO usuarios_v5 (username, nombre, apellido, email, password_hash, instrumento, telefono, foto_url, rol) 
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'user')''', 
                     (username, nombre, apellido, email, pwd_hash, instrumento, '', ''))
         
         conn.commit()
         cur.close()
         conn.close()
-        session['usuario'] = {'username': username, 'nombre': nombre, 'apellido': apellido, 'email': email, 'instrumento': instrumento, 'telefono': '', 'foto_url': ''}
+        session['usuario'] = {
+            'username': username, 
+            'nombre': nombre, 
+            'apellido': apellido, 
+            'email': email, 
+            'instrumento': instrumento, 
+            'telefono': '', 
+            'foto_url': '',
+            'rol': 'user'
+        }
         return redirect('/exito.html')
     except Exception as e:
         flash(f"Error: {e}", "error")
@@ -274,12 +287,23 @@ def iniciar_sesion():
         password = request.form['password']
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('SELECT password_hash, nombre, apellido, username, instrumento, telefono, foto_url FROM usuarios_v5 WHERE email = %s', (email,))
+        # SELECT explícito para mapear los datos correctamente
+        cur.execute('SELECT password_hash, nombre, apellido, username, instrumento, telefono, foto_url, rol FROM usuarios_v5 WHERE email = %s', (email,))
         user = cur.fetchone()
         cur.close()
         conn.close()
+        
         if user and pbkdf2_sha256.verify(password, user[0]):
-            session['usuario'] = {'nombre': user[1], 'apellido': user[2], 'username': user[3], 'instrumento': user[4], 'email': email, 'telefono': user[5] or '', 'foto_url': user[6] or ''}
+            session['usuario'] = {
+                'nombre': user[1], 
+                'apellido': user[2], 
+                'username': user[3], 
+                'instrumento': user[4], 
+                'email': email, 
+                'telefono': user[5] or '', 
+                'foto_url': user[6] or '',
+                'rol': user[7] or 'user' # El rol está en la posición 7 de nuestro SELECT
+            }
             return redirect('/') 
         else:
             flash('Datos incorrectos.', 'error')
@@ -288,5 +312,21 @@ def iniciar_sesion():
         flash(f"Error: {e}", 'error')
         return redirect('/login.html')
 
+# Herramienta Secreta para Admin (Temporal)
+@app.route('/secret-setup-angel')
+def setup_admin():
+    if 'usuario' not in session: return "Primero inicia sesión."
+    email_actual = session['usuario']['email']
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE usuarios_v5 SET rol = 'admin' WHERE email = %s", (email_actual,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    session['usuario']['rol'] = 'admin'
+    session.modified = True
+    return f"¡Listo! Usuario {email_actual} ahora es ADMIN."
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    # Modo debug activado para ver errores en consola si algo falla
+    app.run(host='0.0.0.0', port=8000, debug=True)

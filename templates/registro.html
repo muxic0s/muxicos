@@ -12,11 +12,14 @@
         .check-invalid { color: #6b7280; /* Gray-500 */ }
         .check-icon-valid { background-color: #4ade80; }
         .check-icon-invalid { background-color: #6b7280; }
+        
+        /* Estilos específicos para el input de email */
+        .input-error { border-color: #ef4444 !important; } /* Red-500 */
+        .input-success { border-color: #4ade80 !important; } /* Green-400 */
     </style>
 </head>
 <body class="bg-[#121212] text-white font-sans min-h-screen flex">
 
-    <!-- Sidebar Decorativo -->
     <aside class="w-64 bg-black hidden md:flex flex-col p-6 border-r border-gray-800 justify-between">
         <div>
             <h1 class="text-2xl font-bold mb-8 flex items-center gap-2">
@@ -35,11 +38,9 @@
         <p class="text-[10px] text-gray-700">© 2025 Muxicos Inc.</p>
     </aside>
 
-    <!-- Formulario -->
     <main class="flex-1 flex items-center justify-center p-6 bg-[#0a0a0a]">
         <div class="w-full max-w-2xl bg-[#181818] p-8 rounded-2xl border border-gray-800 shadow-2xl">
             
-            <!-- Mensajes de Error (Backend) -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -55,7 +56,6 @@
 
             <form id="regForm" class="space-y-5" action="/registrar-usuario" method="POST">
                 
-                <!-- Nombre y Apellido -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Nombre</label>
@@ -69,14 +69,13 @@
                     </div>
                 </div>
 
-                <!-- Email -->
                 <div>
                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Correo electrónico</label>
-                    <input type="email" name="email" placeholder="tu@correo.com" required 
+                    <input type="email" id="emailInput" name="email" placeholder="tu@correo.com" required 
                            class="w-full bg-black border border-gray-700 rounded-lg p-3 text-sm focus:border-green-500 outline-none transition text-white">
+                    <p id="emailFeedback" class="text-[10px] mt-1 hidden"></p>
                 </div>
 
-                <!-- Contraseña con Validación -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Contraseña</label>
@@ -90,7 +89,6 @@
                     </div>
                 </div>
 
-                <!-- Lista de Requisitos (Visual) -->
                 <div id="passRequirements" class="bg-[#111] p-3 rounded-lg border border-gray-800 text-[10px] space-y-1 transition-all duration-300 h-0 overflow-hidden opacity-0">
                     <p id="reqLen" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> Mínimo 8 caracteres</p>
                     <p id="reqUp" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> 1 Letra Mayúscula</p>
@@ -99,7 +97,6 @@
                     <p id="reqMatch" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> Las contraseñas coinciden</p>
                 </div>
 
-                <!-- Instrumento -->
                 <div>
                      <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Instrumento Principal</label>
                     <div class="relative">
@@ -131,25 +128,81 @@
         </div>
     </main>
 
-    <!-- LÓGICA DE VALIDACIÓN -->
     <script>
+        // Elementos del DOM
+        const emailInput = document.getElementById('emailInput');
+        const emailFeedback = document.getElementById('emailFeedback');
+        
         const passInput = document.getElementById('password');
         const confirmInput = document.getElementById('confirm_password');
         const requirements = document.getElementById('passRequirements');
         const submitBtn = document.getElementById('submitBtn');
 
-        // Mostrar requisitos al escribir
+        // Estado Global de Validación
+        let isEmailValid = false;
+        let isPasswordValid = false;
+
+        // --- VALIDACIÓN DE EMAIL ---
+        function validateEmail() {
+            const email = emailInput.value;
+            const atIndex = email.indexOf('@');
+            const dotIndex = email.lastIndexOf('.');
+
+            emailFeedback.classList.remove('hidden');
+            
+            // Reiniciar estilos
+            emailInput.classList.remove('input-error', 'input-success');
+            emailFeedback.classList.remove('text-red-400', 'text-green-400');
+
+            if (email.length === 0) {
+                emailFeedback.classList.add('hidden');
+                emailInput.classList.remove('input-error', 'input-success');
+                isEmailValid = false;
+                checkAll();
+                return;
+            }
+
+            // Lógica de validación
+            if (atIndex < 1) {
+                showEmailError("Falta el signo '@' o el usuario.");
+            } else if (dotIndex < atIndex + 2) {
+                showEmailError("Falta el dominio (ej: gmail, hotmail).");
+            } else if (dotIndex === email.length - 1) {
+                showEmailError("Falta la extensión (ej: .com).");
+            } else {
+                // Email Válido
+                showEmailSuccess("Email válido");
+            }
+        }
+
+        function showEmailError(msg) {
+            emailFeedback.textContent = "⚠️ " + msg;
+            emailFeedback.classList.add('text-red-400');
+            emailInput.classList.add('input-error');
+            isEmailValid = false;
+            checkAll();
+        }
+
+        function showEmailSuccess(msg) {
+            emailFeedback.textContent = "✓ " + msg;
+            emailFeedback.classList.add('text-green-400');
+            emailInput.classList.add('input-success');
+            isEmailValid = true;
+            checkAll();
+        }
+
+        // --- VALIDACIÓN DE PASSWORD ---
         passInput.addEventListener('focus', () => {
             requirements.classList.remove('h-0', 'opacity-0');
             requirements.classList.add('h-auto', 'opacity-100', 'mb-4');
         });
 
-        function validate() {
+        function validatePassword() {
             const val = passInput.value;
             const confirmVal = confirmInput.value;
 
             const hasLen = val.length >= 8;
-            const hasUp = /[A-Z]/.test(val); // Mayúscula
+            const hasUp = /[A-Z]/.test(val);
             const hasNum = /\d/.test(val);
             const hasSym = /[!@#$%^&*(),.?":{}|<>]/.test(val);
             const match = val === confirmVal && confirmVal !== '';
@@ -160,17 +213,9 @@
             updateUI('reqSym', hasSym);
             updateUI('reqMatch', match);
 
-            // Habilitar botón solo si todo es correcto
-            const isValid = hasLen && hasUp && hasNum && hasSym && match;
-            submitBtn.disabled = !isValid;
-            
-            if(isValid) {
-                submitBtn.classList.remove('bg-white', 'text-black');
-                submitBtn.classList.add('bg-green-500', 'text-black');
-            } else {
-                submitBtn.classList.add('bg-white', 'text-black');
-                submitBtn.classList.remove('bg-green-500');
-            }
+            // Validar si todo cumple
+            isPasswordValid = hasLen && hasUp && hasNum && hasSym && match;
+            checkAll();
         }
 
         function updateUI(id, isValid) {
@@ -189,8 +234,23 @@
             }
         }
 
-        passInput.addEventListener('input', validate);
-        confirmInput.addEventListener('input', validate);
+        // --- CHEQUEO GLOBAL (Botón Submit) ---
+        function checkAll() {
+            if(isEmailValid && isPasswordValid) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('bg-white', 'text-black');
+                submitBtn.classList.add('bg-green-500', 'text-black');
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('bg-white', 'text-black');
+                submitBtn.classList.remove('bg-green-500');
+            }
+        }
+
+        // Listeners
+        emailInput.addEventListener('input', validateEmail);
+        passInput.addEventListener('input', validatePassword);
+        confirmInput.addEventListener('input', validatePassword);
     </script>
 </body>
 </html>
