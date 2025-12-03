@@ -46,43 +46,7 @@
                 {% endwith %}
             </div>
             
-            <div class="relative flex-shrink-0">
-                <button id="userMenuBtn" class="flex items-center gap-2 hover:bg-[#282828] p-1 pr-3 rounded-full transition group focus:outline-none">
-                    {% if usuario.foto_url %}
-                        <div class="w-9 h-9 rounded-full bg-cover bg-center border-2 border-transparent group-hover:border-white transition" style="background-image: url('{{ usuario.foto_url }}');"></div>
-                    {% else %}
-                        <div class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-sm border-2 border-transparent group-hover:border-white transition">
-                            {{ usuario.nombre[0] | upper if usuario else 'U' }} 
-                        </div>
-                    {% endif %}
-                    <svg class="w-3 h-3 text-gray-400 transition-transform duration-200" id="userMenuArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1E1E1E] rounded-xl shadow-xl border border-gray-800 overflow-hidden z-50 transform origin-top-right transition-all">
-                    <div class="px-4 py-3 border-b border-gray-700 bg-[#252525]">
-                        <div class="flex items-center gap-2">
-                            <p class="text-sm text-white font-bold">{{ usuario.nombre }}</p>
-                            {% if usuario.rol == 'admin' %}
-                                <span class="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">ADMIN</span>
-                            {% endif %}
-                        </div>
-                        <p class="text-[10px] text-gray-400 truncate">@{{ usuario.username }}</p>
-                    </div>
-
-                    {% if usuario.rol == 'admin' %}
-                    <a href="/admin" class="block px-4 py-2.5 text-sm text-red-400 hover:bg-[#2A2A2A] hover:text-red-300 transition flex items-center gap-2">
-                        <span>🛡️</span> Panel Admin
-                    </a>
-                    {% endif %}
-
-                    <button onclick="openModal('configModal')" class="w-full text-left block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition flex items-center gap-2">
-                        <span>⚙️</span> Configuración
-                    </button>
-                    <div class="border-t border-gray-700"></div>
-                    <a href="/logout" class="block px-4 py-2.5 text-sm text-red-400 hover:bg-[#2A2A2A] hover:text-red-300 transition flex items-center gap-2">
-                        <span>🚪</span> Cerrar Sesión
-                    </a>
-                </div>
-            </div>
+            {% include 'user_menu.html' %}
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-10">
@@ -133,14 +97,13 @@
                 
                 <div class="space-y-2">
                     <button onclick="openModal('configModal')" class="w-full bg-[#2A2A2A] hover:bg-[#3A3A3A] py-3 rounded flex justify-between px-4 text-sm font-medium transition group text-gray-300 border border-transparent hover:border-gray-600">
-                        <span>Configurar perfil</span>
-                        <span class="text-gray-500 group-hover:text-white">⚙️</span>
+                        <span>Editar datos</span>
+                        <span class="text-gray-500 group-hover:text-white">✏️</span>
                     </button>
                 </div>
             </div>
 
             <div class="lg:col-span-2 space-y-6">
-                
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="bg-[#181818] p-5 rounded-xl border border-gray-800 flex items-center gap-4">
                         <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
@@ -151,7 +114,6 @@
                             <p class="text-lg font-bold text-white">Principiante</p>
                         </div>
                     </div>
-
                     <div class="bg-[#181818] p-5 rounded-xl border border-gray-800 flex items-center gap-4">
                         <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
                             <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM12.5 7H11V13L16.25 16.15L17 14.92L12.5 12.25V7Z"/></svg>
@@ -161,7 +123,6 @@
                             <p class="text-lg font-bold text-white">0 Horas</p>
                         </div>
                     </div>
-
                     <div class="bg-[#181818] p-5 rounded-xl border border-gray-800 flex items-center gap-4">
                         <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
                             <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z"/></svg>
@@ -177,7 +138,6 @@
                     <h3 class="text-white font-bold mb-4 flex items-center gap-2">
                         <span>🏆</span> Certificaciones y Logros
                     </h3>
-                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="border border-dashed border-gray-700 rounded-lg p-6 flex flex-col items-center justify-center text-center bg-black/20">
                             <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-2 opacity-50 text-2xl">📜</div>
@@ -185,7 +145,6 @@
                             <p class="text-xs text-gray-600 mt-1">Completa tu primer curso para obtener tu insignia.</p>
                             <a href="/cursos" class="mt-3 text-xs text-green-500 font-bold hover:underline uppercase">Ir a cursos</a>
                         </div>
-
                         <div class="border border-gray-800 rounded-lg p-4 flex items-center gap-4 bg-gradient-to-r from-gray-900 to-black relative overflow-hidden group">
                             <div class="absolute right-0 top-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                             <div class="w-12 h-12 bg-green-900/20 rounded-full flex items-center justify-center text-2xl border border-green-500/20 group-hover:scale-110 transition">🎸</div>
@@ -206,7 +165,6 @@
                     </div>
                     <div class="text-6xl opacity-20 rotate-12 relative z-10">🎵</div>
                 </div>
-
             </div>
         </div>
     </main>
@@ -220,12 +178,10 @@
             </div>
             
             <form action="/actualizar-perfil" method="POST" id="profileForm" class="p-6 space-y-5">
-                
                 <div>
                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Foto de Perfil (URL)</label>
                     <input type="text" name="foto_url" value="{{ usuario.foto_url if usuario else '' }}" placeholder="https://..." class="w-full bg-black border border-gray-600 rounded p-2.5 text-xs text-green-400 font-mono focus:border-green-500 outline-none transition">
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Nombre</label>
@@ -236,12 +192,10 @@
                         <input type="text" name="apellido" value="{{ usuario.apellido if usuario else '' }}" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
                     </div>
                 </div>
-
                 <div>
                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Correo electrónico</label>
                     <input type="email" value="{{ usuario.email if usuario else '' }}" readonly class="w-full bg-[#111] border border-gray-800 rounded p-2.5 text-sm text-gray-500 cursor-not-allowed">
                 </div>
-
                 <div>
                     <label class="block text-[10px] text-gray-400 mb-1 uppercase font-bold">Número de Celular</label>
                     <div class="flex gap-2">
@@ -249,30 +203,20 @@
                             <select id="ladaSelect" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none appearance-none cursor-pointer">
                                 <option value="+52">🇲🇽 +52</option>
                                 <option value="+1">🇺🇸 +1</option>
-                                <option value="+57">🇨🇴 +57</option>
-                                <option value="+54">🇦🇷 +54</option>
-                                <option value="+34">🇪🇸 +34</option>
-                                <option value="+56">🇨🇱 +56</option>
-                                <option value="+51">🇵🇪 +51</option>
                             </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                            </div>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400"><svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg></div>
                         </div>
                         <input type="tel" id="telefonoInput" placeholder="Número" class="flex-1 bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
                     <input type="hidden" name="telefono" id="telefonoFull" value="{{ usuario.telefono if usuario else '' }}">
                 </div>
-
                 <div class="border-t border-gray-800 my-4"></div>
-
                 <div class="space-y-3">
                     <label class="block text-[10px] text-green-500 mb-1 uppercase font-bold">Cambiar Contraseña (Opcional)</label>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input type="password" id="newPass" name="password" placeholder="Nueva" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
                         <input type="password" id="confirmPass" placeholder="Confirmar" class="w-full bg-black border border-gray-600 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none transition">
                     </div>
-                    
                     <div id="passRequirements" class="text-[10px] space-y-1 transition-all duration-300 h-0 overflow-hidden opacity-0 p-2 bg-[#151515] rounded border border-gray-800">
                         <p id="reqLen" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> Mínimo 8 caracteres</p>
                         <p id="reqUp" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> 1 Mayúscula</p>
@@ -281,19 +225,9 @@
                         <p id="reqMatch" class="check-item check-invalid flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-current check-icon-invalid"></span> Coinciden</p>
                     </div>
                 </div>
-
-                <div class="pt-2">
-                    <button type="button" id="saveBtn" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Guardar Cambios
-                    </button>
-                </div>
+                <div class="pt-2"><button type="button" id="saveBtn" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed">Guardar Cambios</button></div>
             </form>
-
-            <div class="p-4 bg-[#151515] border-t border-gray-800 text-center">
-                <button onclick="openModal('deleteModal')" class="text-red-500 hover:text-red-400 text-xs font-bold uppercase tracking-wider py-2 transition hover:underline">
-                    Eliminar mi cuenta
-                </button>
-            </div>
+            <div class="p-4 bg-[#151515] border-t border-gray-800 text-center"><button onclick="openModal('deleteModal')" class="text-red-500 hover:text-red-400 text-xs font-bold uppercase tracking-wider py-2 transition hover:underline">Eliminar mi cuenta</button></div>
         </div>
     </div>
 
@@ -304,22 +238,13 @@
             <p class="text-gray-400 text-xs mb-6 px-4">Esta acción es irreversible.</p>
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="closeModal('deleteModal')" class="bg-[#2A2A2A] hover:bg-[#333] text-white py-2.5 rounded-lg font-bold text-sm transition">Cancelar</button>
-                <form action="/eliminar-cuenta" method="POST">
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-bold text-sm transition">Si, eliminar</button>
-                </form>
+                <form action="/eliminar-cuenta" method="POST"><button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-bold text-sm transition">Si, eliminar</button></form>
             </div>
         </div>
     </div>
 
     <script>
-        // Dropdown de Usuario (Local)
-        const userMenuBtn = document.getElementById('userMenuBtn');
-        const userDropdown = document.getElementById('userDropdown');
-        const arrow = document.getElementById('userMenuArrow');
-        if (userMenuBtn) {
-            userMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); userDropdown.classList.toggle('hidden'); if(arrow) arrow.style.transform = userDropdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)'; });
-            document.addEventListener('click', (e) => { if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) { userDropdown.classList.add('hidden'); if(arrow) arrow.style.transform = 'rotate(0deg)'; } });
-        }
+        // NOTA: Eliminamos el script del menú de usuario porque ya viene en user_menu.html
 
         // Modales
         function openModal(id) { document.getElementById(id).classList.remove('hidden-modal'); setTimeout(() => document.getElementById(id).classList.add('active'), 10); }

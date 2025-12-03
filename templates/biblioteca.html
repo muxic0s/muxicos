@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Biblioteca - Muxicos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-text { display: none; }
+        
+        /* Efecto hover suave para tarjetas */
+        .lib-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .lib-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+    </style>
+</head>
+<body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
+
+    {% include 'sidebar.html' %}
+
+    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 no-scrollbar relative w-full h-full">
+        
+        <header class="flex justify-between items-center mb-8 relative z-40">
+            <div>
+                <h2 class="text-3xl font-bold">Mi Biblioteca</h2>
+                <p class="text-gray-400 text-sm mt-1">Tu colección personal de aprendizaje.</p>
+            </div>
+            
+            {% include 'user_menu.html' %}
+        </header>
+
+        <div class="space-y-12 max-w-7xl mx-auto pb-20">
+
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 bg-red-500/10 rounded-lg text-red-500"><span class="text-xl">❤️</span></div>
+                    <h3 class="text-xl font-bold">Videos Favoritos</h3>
+                    <span class="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded-full">{{ favoritos|length }}</span>
+                </div>
+
+                {% if favoritos %}
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {% for curso in favoritos %}
+                        <a href="/curso/{{ curso[0] }}" class="lib-card bg-[#181818] rounded-lg overflow-hidden group block border border-transparent hover:border-gray-700">
+                            <div class="aspect-video bg-gray-800 relative">
+                                <img src="{{ curso[3] }}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition">
+                                <div class="absolute bottom-2 right-2 bg-black/80 px-2 py-1 text-[10px] rounded font-bold">VIDEO</div>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-sm text-white line-clamp-1 mb-1">{{ curso[1] }}</h4>
+                                <p class="text-xs text-gray-400">{{ curso[5] }}</p>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="border border-dashed border-gray-800 rounded-xl p-10 text-center">
+                        <div class="text-4xl mb-3 opacity-30">💔</div>
+                        <p class="text-gray-500 text-sm mb-4">Aún no tienes videos favoritos.</p>
+                        <a href="/cursos" class="text-xs font-bold bg-white text-black px-4 py-2 rounded-full hover:bg-gray-200 transition">Explorar Cursos</a>
+                    </div>
+                {% endif %}
+            </section>
+
+            <hr class="border-gray-800">
+
+            <section>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-blue-500/10 rounded-lg text-blue-500"><span class="text-xl">📑</span></div>
+                        <h3 class="text-xl font-bold">Mis Listas</h3>
+                    </div>
+                    <button class="text-xs font-bold text-green-500 hover:text-green-400 flex items-center gap-1">
+                        <span>+</span> Nueva Lista
+                    </button>
+                </div>
+
+                {% if listas %}
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {% for lista in listas %}
+                        <div class="lib-card bg-[#181818] p-4 rounded-xl border border-gray-800 group cursor-pointer">
+                            <div class="relative w-full aspect-square mb-4">
+                                <div class="absolute inset-0 bg-gray-700 rounded-lg transform rotate-3 scale-95 opacity-50 z-0"></div>
+                                <div class="absolute inset-0 bg-gray-800 rounded-lg transform -rotate-2 scale-95 opacity-70 z-10"></div>
+                                <div class="absolute inset-0 bg-[#252525] rounded-lg z-20 flex items-center justify-center overflow-hidden border border-gray-700">
+                                    {% if lista.portada %}
+                                        <img src="{{ lista.portada }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <span class="text-4xl opacity-20">🎵</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-white text-sm mb-1">{{ lista.nombre }}</h4>
+                            <p class="text-xs text-gray-500">{{ lista.items_count }} canciones</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="bg-gradient-to-r from-blue-900/20 to-transparent rounded-xl p-8 flex items-center gap-6 border border-blue-900/30">
+                        <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center text-2xl text-blue-400">📝</div>
+                        <div>
+                            <h4 class="font-bold text-white mb-1">Crea tu primera lista</h4>
+                            <p class="text-sm text-gray-400 mb-4 max-w-md">Organiza tus clases por género, dificultad o estado de ánimo para practicar mejor.</p>
+                            <button class="text-xs font-bold bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-500 transition">Crear Lista</button>
+                        </div>
+                    </div>
+                {% endif %}
+            </section>
+
+        </div>
+    </main>
+
+</body>
+</html>

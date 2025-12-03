@@ -31,86 +31,20 @@
         .payment-tab.active { border-color: #22c55e; background-color: rgba(34, 197, 94, 0.1); color: white; }
     </style>
 </head>
-<body class="bg-[#121212] text-white font-sans min-h-screen flex overflow-hidden">
+<body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
 
-    <!-- SIDEBAR CORRECTO (Con Biblioteca) -->
-    <aside id="sidebar" class="w-64 bg-black flex flex-col p-4 space-y-8 flex-shrink-0 border-r border-gray-800 transition-all duration-300 ease-in-out z-30">
-        <div class="flex items-center justify-between h-10">
-            <div class="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-                <svg class="w-8 h-8 fill-current text-white flex-shrink-0" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-                <span id="logoText" class="text-xl font-bold tracking-tight transition-opacity duration-200">Muxicos</span>
-            </div>
-            <button id="toggleBtn" class="text-gray-400 hover:text-white p-1 rounded hover:bg-gray-800 transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
-        </div>
+    {% include 'sidebar.html' %}
+
+    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 no-scrollbar relative w-full h-full">
         
-        <nav class="space-y-2 text-gray-400 text-sm font-medium flex-1 overflow-y-auto no-scrollbar">
-            <div class="space-y-1">
-                <a href="/" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Home">
-                    <span class="text-xl flex-shrink-0">🏠</span> <span class="nav-text">Home</span>
-                </a>
-                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Cursos">
-                    <span class="text-xl flex-shrink-0">📚</span> <span class="nav-text">Cursos</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap" title="Favoritos">
-                    <span class="text-xl flex-shrink-0">❤️</span> <span class="nav-text">Favoritos</span>
-                </a>
-            </div>
-
-            <div class="pt-4 border-t border-gray-800 mt-4">
-                <h3 id="libTitle" class="uppercase text-[10px] font-bold text-gray-600 mb-2 px-1 whitespace-nowrap">Configuración</h3>
-                <a href="/perfil" class="flex items-center gap-4 hover:text-white p-3 rounded hover:bg-[#1E1E1E] transition group overflow-hidden whitespace-nowrap">
-                    <span class="text-xl flex-shrink-0">👤</span> <span class="nav-text">Perfil</span>
-                </a>
-                <!-- Activo -->
-                <a href="/config" class="flex items-center gap-4 text-white bg-[#282828] p-3 rounded transition group overflow-hidden whitespace-nowrap">
-                    <span class="text-xl flex-shrink-0">⚙️</span> <span class="nav-text">Ajustes</span>
-                </a>
-            </div>
-
-            <div class="pt-4 border-t border-gray-800 mt-4">
-                <h3 id="libTitle2" class="uppercase text-[10px] font-bold text-gray-600 mb-2 px-1 whitespace-nowrap">Biblioteca</h3>
-                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
-                    <span class="text-xl flex-shrink-0">🎸</span> <span class="nav-text">Guitarra</span>
-                </a>
-                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
-                    <span class="text-xl flex-shrink-0">🎹</span> <span class="nav-text">Acordeón</span>
-                </a>
-                <a href="/cursos" class="flex items-center gap-4 hover:text-white p-3 transition group overflow-hidden whitespace-nowrap">
-                    <span class="text-xl flex-shrink-0">🎻</span> <span class="nav-text">Tololoche</span>
-                </a>
-            </div>
-        </nav>
-    </aside>
-
-    <!-- MAIN CONTENT (Scroll Fix: h-full y overflow-y-auto en el main) -->
-    <main class="flex-1 h-full overflow-y-auto bg-[#121212] p-8 no-scrollbar relative w-full z-0">
-        
-        <!-- Header -->
         <header class="flex justify-between items-center mb-8 relative z-40">
             <h2 class="text-3xl font-bold">Configuración</h2>
             
-            <!-- Dropdown Usuario -->
-            <div class="relative flex-shrink-0">
-                <button id="userMenuBtn" class="flex items-center gap-2 hover:bg-[#282828] p-1 pr-3 rounded-full transition group focus:outline-none">
-                    {% if user.foto_url %}
-                        <div class="w-9 h-9 rounded-full bg-cover bg-center border-2 border-transparent group-hover:border-white transition" style="background-image: url('{{ user.foto_url }}');"></div>
-                    {% else %}
-                        <div class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-sm border-2 border-transparent group-hover:border-white transition">{{ user.nombre[0] | upper }}</div>
-                    {% endif %}
-                    <svg class="w-3 h-3 text-gray-400 transition-transform duration-200" id="userMenuArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1E1E1E] rounded-xl shadow-xl border border-gray-800 overflow-hidden z-50 transform origin-top-right transition-all">
-                    <a href="/perfil" class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition">👤 Mi Perfil</a>
-                    <a href="/logout" class="block px-4 py-2.5 text-sm text-red-400 hover:bg-[#2A2A2A] hover:text-red-300 transition">🚪 Cerrar Sesión</a>
-                </div>
-            </div>
+            {% include 'user_menu.html' %}
         </header>
 
         <div class="space-y-12 max-w-5xl mx-auto pb-20">
 
-            <!-- 1. SECCIÓN MEMBRESÍA -->
             <section class="fade-in">
                 <div class="flex justify-between items-end mb-6">
                     <div>
@@ -120,7 +54,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- FREE -->
                     <div class="bg-[#181818] border border-gray-700 rounded-2xl p-6 relative opacity-70 hover:opacity-100 transition flex flex-col">
                         <h4 class="text-2xl font-bold mb-2">Free</h4>
                         <p class="text-3xl font-black mb-4">$0</p>
@@ -131,7 +64,6 @@
                         <button class="w-full py-3 rounded-lg border border-gray-600 text-gray-400 text-sm cursor-default">Plan Actual</button>
                     </div>
 
-                    <!-- GOLD -->
                     <div class="bg-[#1E1E1E] border-2 border-yellow-500 rounded-2xl p-6 relative transform hover:scale-105 transition shadow-[0_0_20px_rgba(234,179,8,0.1)] flex flex-col">
                         <div class="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl">RECOMENDADO</div>
                         <h4 class="text-2xl font-bold mb-2 text-yellow-500">Gold</h4>
@@ -142,11 +74,9 @@
                             <li>✓ Material PDF</li>
                             <li>✓ Sin anuncios</li>
                         </ul>
-                        <!-- BOTÓN QUE ABRE EL MODAL -->
                         <button onclick="openPaymentModal('Gold', '$99')" class="w-full py-3 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-black font-bold text-sm transition shadow-lg">Suscribirse</button>
                     </div>
 
-                    <!-- PLATINUM -->
                     <div class="bg-[#181818] border border-purple-500/50 rounded-2xl p-6 relative hover:border-purple-500 transition flex flex-col">
                         <h4 class="text-2xl font-bold mb-2 text-purple-400">Platinum</h4>
                         <p class="text-3xl font-black mb-4">$199 <span class="text-sm font-normal text-gray-500">/mes</span></p>
@@ -156,7 +86,6 @@
                             <li>✓ Mentoría mensual</li>
                             <li>✓ Certificado físico</li>
                         </ul>
-                        <!-- BOTÓN QUE ABRE EL MODAL -->
                         <button onclick="openPaymentModal('Platinum', '$199')" class="w-full py-3 rounded-lg bg-purple-900/50 hover:bg-purple-600 text-white font-bold text-sm transition border border-purple-500">Suscribirse</button>
                     </div>
                 </div>
@@ -164,7 +93,28 @@
 
             <hr class="border-gray-800">
 
-            <!-- 2. PERSONALIZADOR DE REPRODUCCIÓN -->
+            <section class="fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Experiencia de Aprendizaje</h3>
+                </div>
+
+                <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 flex justify-between items-center">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h4 class="font-bold text-sm text-white">Acordes en Tiempo Real</h4>
+                            <span class="bg-yellow-500/20 text-yellow-500 text-[10px] px-2 py-0.5 rounded border border-yellow-500/50 font-bold">BETA</span>
+                        </div>
+                        <p class="text-xs text-gray-500 max-w-md">Muestra los diagramas de acordes sobre el video mientras se reproducen.</p>
+                    </div>
+                    <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggle" id="chordsToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                        <label for="chordsToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-700 cursor-pointer"></label>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="border-gray-800">
+
             <section class="fade-in">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold">Reproductor y Subtítulos</h3>
@@ -173,7 +123,6 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="space-y-6">
-                        <!-- Audio Switch -->
                         <div class="bg-[#181818] p-6 rounded-xl border border-gray-800 flex justify-between items-center">
                             <div>
                                 <h4 class="font-bold text-sm text-white">Traducción IA (Audio)</h4>
@@ -185,7 +134,6 @@
                             </div>
                         </div>
 
-                        <!-- Controles -->
                         <div class="space-y-4 p-6 bg-[#181818] rounded-xl border border-gray-800">
                             <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Estilo de Subtítulos</h4>
                             <div>
@@ -213,7 +161,6 @@
                         </div>
                     </div>
 
-                    <!-- Preview -->
                     <div class="bg-black rounded-xl border border-gray-800 p-2 flex flex-col h-full min-h-[250px]">
                         <div class="flex-1 bg-[url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=800')] bg-cover bg-center rounded-lg relative flex items-end justify-center pb-8 px-8">
                             <div id="subtitlePreview" class="px-4 py-2 text-center rounded transition-all duration-100">
@@ -226,11 +173,8 @@
         </div>
     </main>
 
-    <!-- MODAL DE PAGO (Checkout) -->
     <div id="paymentModal" class="modal hidden-modal fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto">
         <div class="modal-content bg-[#121212] w-full max-w-2xl rounded-2xl border border-gray-700 shadow-2xl my-auto flex flex-col md:flex-row overflow-hidden h-[520px]">
-            
-            <!-- Resumen -->
             <div class="bg-[#1E1E1E] p-8 w-full md:w-1/3 border-r border-gray-800 flex flex-col justify-between">
                 <div>
                     <h3 class="text-xs text-gray-400 uppercase font-bold mb-1">Estás comprando</h3>
@@ -243,27 +187,18 @@
                     <p>• Pagos seguros SSL.</p>
                 </div>
             </div>
-
-            <!-- Métodos -->
             <div class="p-8 w-full md:w-2/3 flex flex-col">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-bold">Elige método de pago</h3>
                     <button onclick="closeModal('paymentModal')" class="text-gray-400 hover:text-white text-xl">✕</button>
                 </div>
-
-                <!-- Tabs -->
                 <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
                     <button onclick="switchMethod('card')" class="payment-tab active flex-shrink-0 px-4 py-2 rounded-lg border border-gray-700 text-xs font-bold text-gray-400 hover:text-white transition flex items-center gap-2" id="tab-card"><span>💳</span> Tarjeta</button>
                     <button onclick="switchMethod('gpay')" class="payment-tab flex-shrink-0 px-4 py-2 rounded-lg border border-gray-700 text-xs font-bold text-gray-400 hover:text-white transition flex items-center gap-2" id="tab-gpay">Google Pay</button>
                     <button onclick="switchMethod('apple')" class="payment-tab flex-shrink-0 px-4 py-2 rounded-lg border border-gray-700 text-xs font-bold text-gray-400 hover:text-white transition flex items-center gap-2" id="tab-apple">Apple Pay</button>
                     <button onclick="switchMethod('paypal')" class="payment-tab flex-shrink-0 px-4 py-2 rounded-lg border border-gray-700 text-xs font-bold text-gray-400 hover:text-white transition flex items-center gap-2" id="tab-paypal">PayPal</button>
                 </div>
-
-                <!-- Contenedor con altura fija para evitar saltos -->
                 <div class="flex-1 relative w-full h-80">
-                    
-                    <!-- FIX: Fondo sólido para tapar lo de abajo -->
-                    <!-- Form Tarjeta -->
                     <div id="form-card" class="method-form space-y-4 absolute inset-0 transition-opacity duration-300 opacity-100 z-20 bg-[#121212]">
                         <input type="text" placeholder="Número de tarjeta" class="w-full bg-black border border-gray-700 rounded p-3 text-sm text-white focus:border-green-500 outline-none font-mono">
                         <div class="grid grid-cols-2 gap-4">
@@ -273,49 +208,24 @@
                         <input type="text" placeholder="Nombre del titular" class="w-full bg-black border border-gray-700 rounded p-3 text-sm text-white focus:border-green-500 outline-none">
                         <button class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg mt-4 transition">Pagar y Suscribirse</button>
                     </div>
-
-                    <!-- Form GPay -->
                     <div id="form-gpay" class="method-form absolute inset-0 transition-opacity duration-300 opacity-0 pointer-events-none z-10 bg-[#121212] flex flex-col justify-center items-center text-center">
                         <p class="text-sm text-gray-400 mb-4">Serás redirigido a Google Pay para completar el pago.</p>
                         <button class="w-full bg-white text-black font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition">Pagar con GPay</button>
                     </div>
-
-                    <!-- Form Apple -->
                     <div id="form-apple" class="method-form absolute inset-0 transition-opacity duration-300 opacity-0 pointer-events-none z-10 bg-[#121212] flex flex-col justify-center items-center text-center">
                         <p class="text-sm text-gray-400 mb-4">Usa FaceID o TouchID para confirmar.</p>
                         <button class="w-full bg-black border border-gray-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-900 transition">Pagar con Apple Pay</button>
                     </div>
-
-                    <!-- Form PayPal -->
                     <div id="form-paypal" class="method-form absolute inset-0 transition-opacity duration-300 opacity-0 pointer-events-none z-10 bg-[#121212] flex flex-col justify-center items-center text-center">
                         <p class="text-sm text-gray-400 mb-4">Inicia sesión en tu cuenta de PayPal.</p>
                         <button class="w-full bg-[#0070ba] hover:bg-[#005ea6] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition">Pagar con PayPal</button>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. UI General
-        const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.getElementById('toggleBtn');
-        const userMenuBtn = document.getElementById('userMenuBtn');
-        const userDropdown = document.getElementById('userDropdown');
-        let isCollapsed = false;
-
-        toggleBtn.addEventListener('click', () => {
-            isCollapsed = !isCollapsed;
-            if(isCollapsed) { sidebar.classList.remove('w-64'); sidebar.classList.add('w-20', 'items-center'); document.getElementById('logoText').classList.add('hidden'); document.getElementById('libTitle').classList.add('hidden'); document.getElementById('libTitle2').classList.add('hidden'); }
-            else { sidebar.classList.remove('w-20', 'items-center'); sidebar.classList.add('w-64'); document.getElementById('logoText').classList.remove('hidden'); document.getElementById('libTitle').classList.remove('hidden'); document.getElementById('libTitle2').classList.remove('hidden'); }
-        });
-
-        if(userMenuBtn) {
-            userMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); userDropdown.classList.toggle('hidden'); });
-            document.addEventListener('click', (e) => { if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) userDropdown.classList.add('hidden'); });
-        }
-
         // 2. Subtítulos
         const preview = document.getElementById('subtitlePreview');
         const inputs = { font: document.getElementById('fontFamily'), size: document.getElementById('fontSize'), opacity: document.getElementById('bgOpacity'), color: document.getElementById('textColor') };
@@ -328,7 +238,7 @@
         Object.values(inputs).forEach(input => input.addEventListener('input', updatePreview));
         updatePreview();
 
-        // 3. Modal Pagos (Lógica corregida de switch)
+        // 3. Modal Pagos
         const paymentModal = document.getElementById('paymentModal');
         const modalPlanName = document.getElementById('modalPlanName');
         const modalPlanPrice = document.getElementById('modalPlanPrice');
@@ -347,17 +257,14 @@
         }
 
         function switchMethod(method) {
-            // Reset visual tabs
             document.querySelectorAll('.payment-tab').forEach(tab => tab.classList.remove('active', 'border-green-500', 'bg-green-900/10', 'text-white'));
             document.getElementById('tab-' + method).classList.add('active');
             
-            // Ocultar todos con manejo de z-index y pointer-events
             document.querySelectorAll('.method-form').forEach(form => {
                 form.classList.remove('opacity-100', 'z-20');
                 form.classList.add('opacity-0', 'pointer-events-none', 'z-10');
             });
 
-            // Mostrar seleccionado
             const selectedForm = document.getElementById('form-' + method);
             selectedForm.classList.remove('opacity-0', 'pointer-events-none', 'z-10');
             selectedForm.classList.add('opacity-100', 'z-20');

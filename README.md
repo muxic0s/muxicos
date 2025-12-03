@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" width="420" alt="Muxicos Logo">
+  <img src="assets/logo.png" width="420" alt="Muxicos Logo">
 </p>
 
 <h1 align="center">🎸 Muxicos</h1>
@@ -93,6 +93,9 @@ muxicos/
 ├── app.py              # Lógica principal y rutas
 ├── requirements.txt    # Librerías necesarias
 ├── .env                # Variables sensibles
+├── assets
+│   ├──icon.png
+│   ├──logo.png
 ├── templates/
 │   ├── bienvenida.html
 │   ├── index.html

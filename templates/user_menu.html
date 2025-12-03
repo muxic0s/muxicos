@@ -1,0 +1,75 @@
+<div class="flex items-center gap-4">
+    {% if usuario %}
+        <div class="relative flex-shrink-0 z-50">
+            <button id="globalUserBtn" class="flex items-center gap-3 hover:bg-[#282828] p-1 pr-3 rounded-full transition group focus:outline-none">
+                {% if usuario.foto_url %}
+                    <div class="w-9 h-9 rounded-full bg-cover bg-center border-2 border-transparent group-hover:border-white transition" style="background-image: url('{{ usuario.foto_url }}');"></div>
+                {% else %}
+                    <div class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-sm border-2 border-transparent group-hover:border-white transition">
+                        {{ usuario.nombre[0] | upper if usuario.nombre else 'U' }} 
+                    </div>
+                {% endif %}
+                
+                <svg class="w-3 h-3 text-gray-400 transition-transform duration-200" id="globalUserArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+
+            <div id="globalUserDropdown" class="hidden absolute right-0 mt-2 w-48 bg-[#1E1E1E] rounded-xl shadow-xl border border-gray-800 overflow-hidden transform origin-top-right transition-all duration-200">
+                <div class="px-4 py-3 border-b border-gray-700 bg-[#252525]">
+                    <div class="flex items-center gap-2">
+                        <p class="text-sm text-white font-bold truncate">{{ usuario.nombre }}</p>
+                        {% if usuario.rol == 'admin' %}
+                            <span class="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">ADMIN</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-[10px] text-gray-400 truncate">@{{ usuario.username }}</p>
+                </div>
+
+                <a href="/perfil" class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition flex items-center gap-2">
+                    <span>👤</span> Mi Perfil
+                </a>
+                
+                <a href="/config" class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-[#2A2A2A] hover:text-white transition flex items-center gap-2">
+                    <span>⚙️</span> Configuración
+                </a>
+
+                <div class="border-t border-gray-700"></div>
+                
+                <a href="/logout" class="block px-4 py-2.5 text-sm text-red-400 hover:bg-[#2A2A2A] hover:text-red-300 transition flex items-center gap-2">
+                    <span>🚪</span> Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="flex gap-2">
+            <a href="/login.html" class="text-sm font-bold text-gray-300 hover:text-white px-3 py-2 transition">Log in</a>
+            <a href="/registro.html" class="text-sm font-bold bg-white text-black px-4 py-2 rounded-full hover:scale-105 transition shadow-lg shadow-white/10">Sign up</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const btn = document.getElementById('globalUserBtn');
+        const dropdown = document.getElementById('globalUserDropdown');
+        const arrow = document.getElementById('globalUserArrow');
+
+        if (btn && dropdown) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('hidden');
+                // Rotar flecha
+                if (arrow) {
+                    arrow.style.transform = dropdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+                }
+            });
+
+            // Cerrar al hacer clic fuera
+            document.addEventListener('click', (e) => {
+                if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    if (arrow) arrow.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+    });
+</script>
