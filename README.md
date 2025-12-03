@@ -70,7 +70,11 @@ git clone https://github.com/tu-usuario/muxicos.git
 cd muxicos
 ```
 
+<<<<<<< HEAD
 ### 2. Instalar depencias
+=======
+### 2. Instalar dependencias
+>>>>>>> 0a6463def0432afa951ecfc379ab5e82a9d4a4eb
 ```bash
 pip install -r requirements.txt
 ```
@@ -86,13 +90,27 @@ python app.py
 La app correrá en: http://localhost:8000
 ```
 
+<<<<<<< HEAD
 ```bash
 muxicos/
 ├── app.py
 ├── requirements.txt
+=======
+## 📂 Estructura del Proyecto
+
+```text
+muxicos/
+├── app.py              # Lógica principal y rutas
+├── requirements.txt    # Librerías necesarias
+├── .env                # Variables sensibles
+>>>>>>> 0a6463def0432afa951ecfc379ab5e82a9d4a4eb
 ├── templates/
 │   ├── bienvenida.html
 │   ├── index.html
 │   └── admin.html
 └── README.md
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 0a6463def0432afa951ecfc379ab5e82a9d4a4eb
