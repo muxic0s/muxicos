@@ -86,13 +86,22 @@ python app.py
 La app correrá en: http://localhost:8000
 ```
 
-```bash
+## 📂 Estructura del Proyecto
+
+```text
 muxicos/
-├── app.py
-├── requirements.txt
+├── app.py              # Lógica principal y rutas
+├── requirements.txt    # Librerías necesarias
+├── .env                # Variables sensibles
 ├── templates/
 │   ├── bienvenida.html
 │   ├── index.html
+│   ├── login.html
+│   ├── registro.html
+│   ├── perfil.html
+│   ├── cursos.html
+│   ├── detalle.html
+│   ├── config.html
 │   └── admin.html
 └── README.md
-``
+```
