@@ -1,102 +1,97 @@
-🎸 Muxicos - Plataforma de Aprendizaje Musical
+<p align="center">
+  <img src="8eecb000-e7b4-4027-a763-ab7774b8e575.png" width="420" alt="Muxicos Logo">
+</p>
 
-Muxicos es una plataforma web estilo SaaS (Software as a Service) diseñada para conectar a estudiantes con cursos de música regional mexicana (Guitarra, Acordeón, Tololoche, etc.).
+<h1 align="center">🎸 Muxicos</h1>
+<h3 align="center">Plataforma SaaS para Aprender Música Regional Mexicana</h3>
 
-El proyecto combina una interfaz moderna y oscura (inspirada en Spotify/Netflix) con un backend robusto en Python que gestiona usuarios, seguridad y contenido dinámico.
+<p align="center">
+  <em>Un escenario donde la técnica y la pasión se encuentran.</em>
+</p>
 
-🚀 Características Principales
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-En%20Desarrollo-6A5ACD?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Frontend-HTML%20%7C%20JS%20%7C%20Tailwind-1E90FF?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Backend-Python%20Flask-32CD32?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-316192?style=for-the-badge">
+</p>
 
-🔐 Autenticación y Seguridad
+---
 
-Registro Seguro: Validación de contraseñas en tiempo real (8 caracteres, mayúsculas, símbolos).
+## 🌑 ¿Qué es Muxicos?
 
-Hashing: Las contraseñas se encriptan con PBKDF2-SHA256 antes de guardarse en la base de datos.
+Muxicos es una plataforma web moderna, con una estética oscura y elegante, diseñada para conectar a estudiantes con cursos de guitarra, acordeón, tololoche y más.  
+Su espíritu es simple: **hacer accesible el aprendizaje musical con una experiencia fluida, rápida y sin ruido innecesario**.
 
-Sesiones: Gestión de estado de usuario mediante cookies seguras (flask.session).
+---
 
-🎓 Gestión de Cursos (LMS)
+## 🚀 Características Principales
 
-Catálogo Dinámico: Buscador en tiempo real y filtros por instrumento sin recargar la página (JS Vanilla).
+### 🔐 Autenticación y Seguridad
+- Validación avanzada de contraseñas en tiempo real.  
+- Contraseñas encriptadas con **PBKDF2-SHA256**.  
+- Manejo seguro de sesiones con cookies firmadas.
 
-Admin Panel Secreto: /admin permite subir cursos pegando solo el link de YouTube.
+---
 
-YouTube Scraper: El sistema extrae automáticamente título, miniatura y autor usando la API noembed.
+### 🎓 Sistema de Cursos (LMS)
+- Catálogo con **búsqueda instantánea** sin recargar la página.  
+- Filtros por instrumento (Vanilla JS).  
+- Panel administrativo secreto: **/admin**.  
+- Carga de cursos solo pegando un enlace de YouTube.  
+- Scraper automático vía *noembed* (título, autor y miniatura).  
+- Reproductor rápido con **lite-youtube-embed** (sin rastreo).
 
-Reproductor Optimizado: Usa lite-youtube-embed para carga instantánea y evita el rastreo de cookies de terceros.
+---
 
-👤 Perfil de Usuario
+### 👤 Perfil del Usuario
+- Dashboard personalizado.  
+- Edición del perfil desde un modal elegante.  
+- Checkout simulado: Tarjeta, PayPal, Google Pay, Apple Pay.  
 
-Dashboard Personal: Vista de cursos recientes y progreso.
+---
 
-Configuración Modal: Edición de datos (Nombre, Teléfono, Foto) sin salir de la página.
+## 🛠️ Stack Tecnológico
 
-Checkout Simulado: Interfaz de pago con pestañas para Tarjeta, PayPal, Google Pay y Apple Pay.
+| Capa | Tecnología |
+|------|------------|
+| Backend | Python + Flask |
+| Base de Datos | PostgreSQL (Neon.tech serverless) |
+| Frontend | HTML5, Tailwind CSS (CDN), JavaScript Vanilla |
+| Infraestructura | GitHub Codespaces |
 
-🛠️ Stack Tecnológico
+---
 
-Backend: Python 3, Flask.
+## 📦 Instalación y Ejecución
 
-Base de Datos: PostgreSQL (Alojada en Neon Tech - Serverless).
-
-Frontend: HTML5, JavaScript (Vanilla), Tailwind CSS (vía CDN).
-
-Infraestructura: GitHub Codespaces.
-
-📦 Instalación y Despliegue
-
-Requisitos Previos
-
-Python 3.8+
-
-Una base de datos PostgreSQL (recomendado Neon.tech).
-
-Pasos para correr localmente
-
-Clonar el repositorio:
-
-git clone [https://github.com/tu-usuario/muxicos.git](https://github.com/tu-usuario/muxicos.git)
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/tu-usuario/muxicos.git
 cd muxicos
 
-
-Instalar dependencias:
-
+2. Instalar dependencias
 pip install -r requirements.txt
 
-
-Configurar Variables de Entorno:
-Crea un archivo .env en la raíz y agrega tu conexión a Neon:
-
+3. Crear archivo .env
 DATABASE_URL=postgresql://usuario:password@ep-cool-db.us-east-2.aws.neon.tech/neondb
 
-
-Ejecutar el servidor:
-
+4. Ejecutar el servidor
 python app.py
-
-
-La aplicación correrá en http://localhost:8000.
+La app correrá en: http://localhost:8000
 
 📂 Estructura del Proyecto
-
 muxicos/
-├── app.py              # Cerebro de la aplicación (Rutas y Lógica)
-├── requirements.txt    # Lista de librerías necesarias
-├── .env                # Credenciales (No subir a GitHub)
-├── templates/          # Vistas HTML (Frontend)
-│   ├── bienvenida.html # Landing Page (Pública)
-│   ├── index.html      # Dashboard (Privado)
-│   ├── login.html      # Inicio de sesión
-│   ├── registro.html   # Crear cuenta
-│   ├── perfil.html     # Configuración de usuario
-│   ├── cursos.html     # Catálogo y Buscador
-│   ├── detalle.html    # Reproductor de video
-│   ├── config.html     # Pagos y Ajustes
-│   └── admin.html      # Panel de carga de videos
-└── README.md           # Documentación
-
-
-🤝 Contribución
-
-Este proyecto fue desarrollado con fines educativos para la materia de Metodologías para el Desarrollo de Proyectos / Seguridad Informática.
-
-Desarrollado por: Angel Anguiano y Axel Suarez.   
+├── app.py
+├── requirements.txt
+├── .env
+├── templates/
+│   ├── bienvenida.html
+│   ├── index.html
+│   ├── login.html
+│   ├── registro.html
+│   ├── perfil.html
+│   ├── cursos.html
+│   ├── detalle.html
+│   ├── config.html
+│   └── admin.html
+└── README.md
