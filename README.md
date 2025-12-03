@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/workspaces/muxicos/logo.png" width="420" alt="Muxicos Logo">
+  <img src="logo.png" width="420" alt="Muxicos Logo">
 </p>
 
 <h1 align="center">🎸 Muxicos</h1>
