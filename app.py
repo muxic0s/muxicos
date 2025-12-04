@@ -3,6 +3,7 @@ import random
 import string
 import requests
 import yt_dlp
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import psycopg2
@@ -29,6 +30,29 @@ def get_db_connection():
     except KeyError:
         return "Error: No se encontró la variable DATABASE_URL."
 
+# --- MIGRACIÓN DE SEGURIDAD (Ejecutar al inicio) ---
+def verificar_columnas_seguridad():
+    conn = get_db_connection()
+    if isinstance(conn, str): return
+    cur = conn.cursor()
+    try:
+        # Intentamos agregar las columnas. Si ya existen, dará error y lo ignoramos.
+        try:
+            cur.execute("ALTER TABLE usuarios_v5 ADD COLUMN intentos_fallidos INTEGER DEFAULT 0")
+            cur.execute("ALTER TABLE usuarios_v5 ADD COLUMN bloqueo_hasta TIMESTAMP")
+            conn.commit()
+            print("--- SEGURIDAD: Columnas de bloqueo agregadas ---")
+        except:
+            conn.rollback() # Ya existían
+    except Exception as e:
+        print(f"Error migración seguridad: {e}")
+    finally:
+        cur.close()
+        conn.close()
+
+# Ejecutar inmediatamente
+verificar_columnas_seguridad()
+
 def generar_username():
     sufijo = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
     return f"user_{sufijo}"
@@ -48,20 +72,30 @@ def obtener_id_video(url):
 # (Pega aquí tus rutas existentes de home, cursos, ver_curso, toggle-favorito, biblioteca, perfil, etc.)
 # SOLO VOY A PONER LA FUNCIÓN QUE CAMBIA DRASTICAMENTE: agregar_curso
 
+# ==========================================
+# RUTAS PRINCIPALES
+# ==========================================
+
 @app.route('/')
 def home():
-    usuario = session.get('usuario')
-    conn = get_db_connection()
-    cur = conn.cursor()
-    try:
-        cur.execute("SELECT * FROM cursos ORDER BY id DESC LIMIT 4")
-        cursos = cur.fetchall()
-    except:
-        cursos = []
-        conn.rollback()
-    cur.close()
-    conn.close()
-    return render_template('index.html', usuario=usuario, cursos=cursos, banners=BANNERS)
+    # 1. CASO: Usuario Logueado -> Va al Dashboard (index.html)
+    if 'usuario' in session:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        try:
+            # Traemos los cursos solo si vamos a mostrar el Dashboard
+            cur.execute("SELECT * FROM cursos ORDER BY id DESC LIMIT 4")
+            cursos = cur.fetchall()
+        except:
+            cursos = []
+            conn.rollback()
+        cur.close()
+        conn.close()
+        return render_template('index.html', usuario=session['usuario'], cursos=cursos, banners=BANNERS)
+    
+    # 2. CASO: Visitante (Primera vez) -> Va a la Bienvenida
+    else:
+        return render_template('bienvenida.html')
 
 @app.route('/cursos')
 def cursos_page():
@@ -218,20 +252,95 @@ def registrar_usuario():
 
 @app.route('/iniciar-sesion', methods=['POST'])
 def iniciar_sesion():
-    # ... (Usa tu código actual) ...
-    email = request.form['email']
-    password = request.form['password']
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT password_hash, nombre, apellido, username, instrumento, telefono, foto_url, rol FROM usuarios_v5 WHERE email = %s', (email,))
-    user = cur.fetchone()
-    cur.close()
-    conn.close()
-    if user and pbkdf2_sha256.verify(password, user[0]):
-        session['usuario'] = {'nombre': user[1], 'apellido': user[2], 'username': user[3], 'instrumento': user[4], 'email': email, 'telefono': user[5], 'foto_url': user[6], 'rol': user[7]}
-        return redirect('/')
-    return redirect('/login.html')
+    email = request.form.get('email')
+    password = request.form.get('password')
 
+    if not email or not password:
+        flash('Por favor completa todos los campos.', 'error')
+        return redirect('/login.html')
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Obtenemos datos incluyendo las columnas de seguridad
+        cur.execute("""
+            SELECT password_hash, nombre, apellido, username, instrumento, 
+                   telefono, foto_url, rol, intentos_fallidos, bloqueo_hasta 
+            FROM usuarios_v5 WHERE email = %s
+        """, (email,))
+        
+        user = cur.fetchone()
+
+        # 1. Si el usuario NO existe
+        if user is None:
+            cur.close()
+            conn.close()
+            flash('El correo ingresado no está registrado.', 'error')
+            return redirect('/login.html')
+
+        # Desempaquetar datos (Ojo con el orden, debe coincidir con el SELECT)
+        (pwd_hash, nombre, apellido, username, instrumento, 
+         tel, foto, rol, intentos, bloqueo_hasta) = user
+
+        # 2. VERIFICAR SI ESTÁ BLOQUEADO POR TIEMPO
+        if bloqueo_hasta and datetime.now() < bloqueo_hasta:
+            tiempo_restante = (bloqueo_hasta - datetime.now()).seconds
+            cur.close()
+            conn.close()
+            flash(f'Cuenta bloqueada temporalmente. Intenta en {tiempo_restante} segundos.', 'error')
+            return redirect('/login.html')
+
+        # 3. VERIFICAR CONTRASEÑA
+        if pbkdf2_sha256.verify(password, pwd_hash):
+            # --- ÉXITO: Reseteamos contadores a 0 ---
+            cur.execute("""
+                UPDATE usuarios_v5 SET intentos_fallidos = 0, bloqueo_hasta = NULL 
+                WHERE email = %s
+            """, (email,))
+            conn.commit()
+            
+            session['usuario'] = {
+                'nombre': nombre, 'apellido': apellido, 'username': username, 
+                'instrumento': instrumento, 'email': email, 'telefono': tel or '', 
+                'foto_url': foto or '', 'rol': rol or 'user'
+            }
+            cur.close()
+            conn.close()
+            return redirect('/') 
+        else:
+            # --- FALLO: Aumentamos contador ---
+            nuevos_intentos = (intentos or 0) + 1
+            msg_error = 'Contraseña incorrecta.'
+            
+            # REGLA DE NEGOCIO: 3 Intentos = Bloqueo
+            if nuevos_intentos >= 3:
+                # BLOQUEAR POR 60 SEGUNDOS
+                tiempo_bloqueo = datetime.now() + timedelta(seconds=60)
+                cur.execute("""
+                    UPDATE usuarios_v5 SET intentos_fallidos = %s, bloqueo_hasta = %s 
+                    WHERE email = %s
+                """, (nuevos_intentos, tiempo_bloqueo, email))
+                msg_error = 'Has excedido los intentos. Cuenta bloqueada por 60s.'
+            else:
+                # Solo aumentar contador
+                cur.execute("""
+                    UPDATE usuarios_v5 SET intentos_fallidos = %s 
+                    WHERE email = %s
+                """, (nuevos_intentos, email))
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            flash(f"{msg_error} (Intento {nuevos_intentos}/3)", 'error')
+            return redirect('/login.html')
+
+    except Exception as e:
+        print(f"Error Login: {e}")
+        flash(f'Error del sistema: {str(e)}', 'error')
+        return redirect('/login.html')
+    
 @app.route('/admin')
 def admin_page():
     if 'usuario' not in session or session['usuario'].get('rol') != 'admin': return redirect('/perfil')
@@ -246,6 +355,64 @@ def admin_page():
     cur.close()
     conn.close()
     return render_template('admin.html', usuario=session['usuario'], cursos=cursos)
+
+# ==========================================
+# GESTIÓN DE USUARIOS (NUEVO)
+# ==========================================
+
+@app.route('/admin/usuarios')
+def admin_usuarios():
+    # 1. Seguridad: Solo admins pueden entrar
+    if 'usuario' not in session: return redirect('/login.html')
+    if session['usuario'].get('rol') != 'admin':
+        flash("No tienes permisos para ver usuarios.", "error")
+        return redirect('/perfil')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # 2. Obtenemos TODOS los usuarios ordenados por rol (admins primero)
+    # id, nombre, apellido, username, email, telefono, instrumento, foto_url, rol
+    cur.execute("""
+        SELECT id, nombre, apellido, username, email, telefono, instrumento, foto_url, rol 
+        FROM usuarios_v5 
+        ORDER BY CASE WHEN rol = 'admin' THEN 1 WHEN rol = 'editor' THEN 2 ELSE 3 END, id ASC
+    """)
+    usuarios = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    # Pasamos 'usuario_actual' para evitar que te borres a ti mismo en la vista
+    return render_template('admin_usuarios.html', usuario=session['usuario'], usuarios=usuarios, usuario_actual=session['usuario'])
+
+@app.route('/admin/cambiar-rol', methods=['POST'])
+def cambiar_rol():
+    # 1. Seguridad
+    if 'usuario' not in session or session['usuario'].get('rol') != 'admin':
+        return redirect('/')
+
+    target_email = request.form['user_email']
+    nuevo_rol = request.form['nuevo_rol']
+    
+    # Evitar quitarse el admin a uno mismo por error
+    if target_email == session['usuario']['email'] and nuevo_rol != 'admin':
+        flash("No puedes quitarte el rol de SuperAdmin a ti mismo.", "error")
+        return redirect('/admin/usuarios')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("UPDATE usuarios_v5 SET rol = %s WHERE email = %s", (nuevo_rol, target_email))
+        conn.commit()
+        flash(f"Rol de {target_email} actualizado a '{nuevo_rol.upper()}'.", "success")
+    except Exception as e:
+        flash(f"Error al actualizar rol: {e}", "error")
+    finally:
+        cur.close()
+        conn.close()
+
+    return redirect('/admin/usuarios')
 
 # ==========================================
 # IMPORTADOR BLINDADO (YT-DLP + FALLBACK)

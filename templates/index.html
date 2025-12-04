@@ -11,40 +11,53 @@
         .slide { transition: opacity 1s ease-in-out; position: absolute; inset: 0; opacity: 0; pointer-events: none; }
         .slide.active { opacity: 1; z-index: 10; pointer-events: auto; }
         .hide-text { display: none; }
-        /* Animación Dropdown */
-        .dropdown-enter { transform: translateY(-10px); opacity: 0; }
-        .dropdown-enter-active { transform: translateY(0); opacity: 1; transition: all 0.2s ease; }
+        
+        /* Efecto de resplandor para los botones */
+        .glow-btn:hover { box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
     </style>
 </head>
-<body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
+<body class="bg-[#0a0a0a] text-white font-sans h-screen flex overflow-hidden">
 
     {% include 'sidebar.html' %}
 
-    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 no-scrollbar relative w-full">
+    <main class="flex-1 overflow-y-auto bg-[#0a0a0a] p-6 lg:p-10 no-scrollbar relative w-full">
         
         <header class="flex justify-end items-center mb-6 relative z-40">
             {% include 'user_menu.html' %}
         </header>
 
-        <div class="relative w-full h-80 rounded-2xl mb-10 overflow-hidden bg-gray-900 group shadow-2xl">
+        <div class="relative w-full h-[400px] rounded-3xl mb-8 overflow-hidden bg-gray-900 group shadow-2xl border border-gray-800">
             {% if banners %}
                 {% for banner in banners %}
                 <div class="slide {{ 'active' if loop.first else '' }}" id="slide-{{ loop.index0 }}">
-                    <div class="absolute inset-0 bg-cover bg-center transition duration-700 transform group-hover:scale-105" style="background-image: url('{{ banner.img }}');"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-                    <div class="relative z-20 h-full flex flex-col justify-end p-10 max-w-2xl">
-                        <span class="inline-block px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-4 w-fit {{ 'bg-green-500 text-black' if banner.color == 'green' else 'bg-yellow-500 text-black' if banner.color == 'yellow' else 'bg-purple-600 text-white' }}">{{ banner.tag }}</span>
-                        <h2 class="text-4xl md:text-5xl font-black mb-4 leading-tight drop-shadow-xl">{{ banner.titulo }}</h2>
-                        <p class="text-gray-200 mb-8 text-sm drop-shadow-md max-w-lg">{{ banner.desc }}</p>
+                    <div class="absolute inset-0 bg-cover bg-center transition duration-[2000ms] transform group-hover:scale-105" style="background-image: url('{{ banner.img }}');"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
+                    
+                    <div class="relative z-20 h-full flex flex-col justify-end p-8 md:p-12 max-w-3xl">
+                        <span class="inline-block px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-4 w-fit shadow-lg {{ 'bg-green-500 text-black' if banner.color == 'green' else 'bg-yellow-500 text-black' if banner.color == 'yellow' else 'bg-purple-600 text-white' }}">
+                            {{ banner.tag }}
+                        </span>
+                        <h2 class="text-4xl md:text-6xl font-black mb-4 leading-tight drop-shadow-2xl tracking-tight">
+                            {{ banner.titulo }}
+                        </h2>
+                        <p class="text-gray-200 mb-8 text-sm md:text-base drop-shadow-md max-w-xl leading-relaxed">
+                            {{ banner.desc }}
+                        </p>
                         <div class="flex gap-4">
-                            <a href="/cursos" class="bg-white text-black font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition transform hover:scale-105 shadow-lg">Ver más</a>
+                            <a href="/cursos" class="bg-white text-black font-bold py-3.5 px-8 rounded-full hover:bg-gray-200 transition transform hover:scale-105 shadow-xl glow-btn flex items-center gap-2">
+                                <span class="text-xl">▶</span> Ver Ahora
+                            </a>
+                            <button class="bg-white/10 backdrop-blur-md text-white font-bold py-3.5 px-6 rounded-full hover:bg-white/20 transition border border-white/20">
+                                + Mi Lista
+                            </button>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
-                <div class="absolute bottom-6 right-8 z-30 flex gap-2">
+                <div class="absolute bottom-8 right-12 z-30 flex gap-2">
                     {% for banner in banners %}
-                    <button class="w-2 h-2 rounded-full bg-white/50 hover:bg-white transition indicator {{ 'bg-white' if loop.first else '' }}" onclick="changeSlide({{ loop.index0 }})"></button>
+                    <button class="w-2.5 h-2.5 rounded-full transition-all duration-300 indicator {{ 'bg-white w-8' if loop.first else 'bg-white/30 hover:bg-white/80' }}" onclick="changeSlide({{ loop.index0 }})"></button>
                     {% endfor %}
                 </div>
             {% else %}
@@ -52,42 +65,142 @@
             {% endif %}
         </div>
 
-        <section class="mb-10">
-            <div class="flex justify-between items-end mb-4">
-                <h3 class="text-xl font-bold">Agregados Recientemente</h3>
-                <a href="/cursos" class="text-xs font-bold text-gray-400 hover:text-white uppercase tracking-wide transition">Ver todo →</a>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            
+            <div class="relative rounded-2xl p-8 overflow-hidden group border border-yellow-600/20 cursor-pointer">
+                <div class="absolute inset-0 bg-gradient-to-br from-yellow-900/60 via-[#1a1500] to-black z-0 transition duration-500 group-hover:scale-105"></div>
+                <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition transform group-hover:rotate-12">
+                    <svg class="w-32 h-32 text-yellow-500 fill-current" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+                
+                <div class="relative z-10">
+                    <span class="bg-yellow-500 text-black text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider mb-2 inline-block">Premium</span>
+                    <h3 class="text-2xl font-bold text-white mb-2 leading-tight">Muxicos <span class="text-yellow-400">PRO</span></h3>
+                    <p class="text-gray-400 text-xs mb-6 max-w-xs">Accede a partituras exclusivas, descargas offline y soporte prioritario.</p>
+                    <button class="text-yellow-400 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Mejorar mi plan <span>→</span>
+                    </button>
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <div class="relative rounded-2xl p-8 overflow-hidden group border border-purple-600/20 cursor-pointer">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-900/60 via-[#10001a] to-black z-0 transition duration-500 group-hover:scale-105"></div>
+                <div class="absolute -bottom-4 -right-4 flex -space-x-8 opacity-40 group-hover:opacity-60 transition">
+                    <div class="w-20 h-20 rounded-full bg-blue-500 border-4 border-black"></div>
+                    <div class="w-20 h-20 rounded-full bg-purple-500 border-4 border-black"></div>
+                    <div class="w-20 h-20 rounded-full bg-pink-500 border-4 border-black"></div>
+                </div>
+
+                <div class="relative z-10">
+                    <span class="bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider mb-2 inline-block">Nuevo</span>
+                    <h3 class="text-2xl font-bold text-white mb-2 leading-tight">Listas Curadas</h3>
+                    <p class="text-gray-400 text-xs mb-6 max-w-xs">Compilaciones especiales para Norteño, Sierreño y Banda.</p>
+                    <button class="text-purple-300 text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Explorar listas <span>→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <section class="mb-12">
+            <div class="flex justify-between items-end mb-6">
+                <h3 class="text-2xl font-bold text-white tracking-tight">Agregados Recientemente</h3>
+                <a href="/cursos" class="text-xs font-bold text-gray-500 hover:text-white uppercase tracking-wide transition">Ver todo</a>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {% if cursos %}
                     {% for curso in cursos %}
-                    <a href="/curso/{{ curso[0] }}" class="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition cursor-pointer group flex flex-col h-full border border-transparent hover:border-gray-800 block">
-                        <div class="h-36 bg-gray-700 rounded mb-4 overflow-hidden relative shadow-lg">
-                            <img src="{{ curso[3] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90 group-hover:opacity-100" loading="lazy">
-                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black/40">
-                                <div class="bg-green-500 text-black rounded-full p-2 shadow-lg transform scale-0 group-hover:scale-100 transition duration-300 delay-75"><svg class="w-4 h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+                    <a href="/curso/{{ curso[0] }}" class="group bg-[#161616] rounded-xl overflow-hidden hover:bg-[#202020] transition-all duration-300 border border-transparent hover:border-gray-700 hover:shadow-xl hover:-translate-y-1 block">
+                        <div class="h-40 bg-gray-800 overflow-hidden relative">
+                            <img src="{{ curso[3] }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-90 group-hover:opacity-100" loading="lazy">
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 backdrop-blur-sm">
+                                <div class="bg-green-500 text-black rounded-full p-3 shadow-lg transform scale-50 group-hover:scale-100 transition duration-300">
+                                    <svg class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
                             </div>
                         </div>
-                        <h4 class="font-bold mb-1 text-sm line-clamp-1 group-hover:text-green-400 transition">{{ curso[1] }}</h4>
-                        <p class="text-xs text-gray-400 mt-1 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-600 inline-block"></span> {{ curso[5] }}</p>
+                        <div class="p-4">
+                            <h4 class="font-bold text-white mb-1 line-clamp-1 text-sm group-hover:text-green-400 transition">{{ curso[1] }}</h4>
+                            <div class="flex items-center justify-between mt-2">
+                                <p class="text-xs text-gray-400 flex items-center gap-1.5">
+                                    {% if curso[6] %}
+                                    <img src="{{ curso[6] }}" class="w-4 h-4 rounded-full">
+                                    {% else %}
+                                    <span class="w-4 h-4 rounded-full bg-gray-600"></span>
+                                    {% endif %}
+                                    {{ curso[5] }}
+                                </p>
+                                <span class="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded border border-gray-700">HD</span>
+                            </div>
+                        </div>
                     </a>
                     {% endfor %}
                 {% else %}
-                    <div class="col-span-full py-10 text-center border border-dashed border-gray-800 rounded-xl">
+                    <div class="col-span-full py-12 text-center border border-dashed border-gray-800 rounded-xl bg-[#111]">
                         <p class="text-gray-500 text-sm">Aún no hay cursos recientes.</p>
-                        {% if usuario and usuario.rol == 'admin' %}
-                        <a href="/admin" class="text-xs text-green-500 hover:underline mt-2 inline-block">Ir al Admin Panel</a>
-                        {% endif %}
                     </div>
                 {% endif %}
+            </div>
+        </section>
+
+        <section class="mb-10">
+            <div class="flex justify-between items-end mb-6">
+                <h3 class="text-2xl font-bold text-white tracking-tight">Explora por Instrumento</h3>
+                <button class="w-8 h-8 rounded-full bg-[#1E1E1E] flex items-center justify-center hover:bg-white hover:text-black transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                
+                <a href="#" class="bg-[#181818] hover:bg-[#222] border border-gray-800 hover:border-gray-600 p-4 rounded-xl flex items-center gap-4 transition group">
+                    <div class="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center text-2xl group-hover:scale-110 transition">🎹</div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-200">Acordeón</h4>
+                        <p class="text-[10px] text-gray-500">Listas nuevas</p>
+                    </div>
+                </a>
+
+                <a href="#" class="bg-[#181818] hover:bg-[#222] border border-gray-800 hover:border-gray-600 p-4 rounded-xl flex items-center gap-4 transition group">
+                    <div class="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center text-2xl group-hover:scale-110 transition">🎸</div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-200">Bajo Sexto</h4>
+                        <p class="text-[10px] text-gray-500">Compilaciones</p>
+                    </div>
+                </a>
+
+                <a href="#" class="bg-[#181818] hover:bg-[#222] border border-gray-800 hover:border-gray-600 p-4 rounded-xl flex items-center gap-4 transition group">
+                    <div class="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center text-2xl group-hover:scale-110 transition">🎺</div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-200">Tuba</h4>
+                        <p class="text-[10px] text-gray-500">Técnicas</p>
+                    </div>
+                </a>
+
+                <a href="#" class="bg-[#181818] hover:bg-[#222] border border-gray-800 hover:border-gray-600 p-4 rounded-xl flex items-center gap-4 transition group">
+                    <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center text-2xl group-hover:scale-110 transition">🎻</div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-200">Tololoche</h4>
+                        <p class="text-[10px] text-gray-500">Básico</p>
+                    </div>
+                </a>
+
+                <a href="#" class="bg-[#181818] hover:bg-[#222] border border-gray-800 hover:border-gray-600 p-4 rounded-xl flex items-center gap-4 transition group">
+                    <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center text-2xl group-hover:scale-110 transition">🎵</div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-200">Docerola</h4>
+                        <p class="text-[10px] text-gray-500">Requintos</p>
+                    </div>
+                </a>
+
             </div>
         </section>
 
     </main>
 
     <script>
-        // NOTA: Los scripts de Sidebar y UserMenu ya vienen incluidos automáticamente.
-
-        // Slider (Carrusel)
+        // Slider Logic
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const indicators = document.querySelectorAll('.indicator');
@@ -95,14 +208,20 @@
 
         function showSlide(index) {
             if (slides.length === 0) return;
+            
             slides.forEach(s => s.classList.remove('active'));
-            indicators.forEach(i => i.classList.remove('bg-white'));
-            indicators.forEach(i => i.classList.add('bg-white/50'));
+            
+            // Actualizar indicadores (Ancho y Opacidad)
+            indicators.forEach(i => {
+                i.classList.remove('bg-white', 'w-8');
+                i.classList.add('bg-white/30', 'w-2.5');
+            });
             
             slides[index].classList.add('active');
+            
             if(indicators[index]) { 
-                indicators[index].classList.remove('bg-white/50'); 
-                indicators[index].classList.add('bg-white'); 
+                indicators[index].classList.remove('bg-white/30', 'w-2.5'); 
+                indicators[index].classList.add('bg-white', 'w-8'); 
             }
             currentSlide = index;
         }

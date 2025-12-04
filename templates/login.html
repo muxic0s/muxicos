@@ -5,11 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muxicos - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fix para el autocompletado de Chrome/Edge */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px #0a0a0a inset !important;
+            -webkit-text-fill-color: white !important;
+        }
+    </style>
 </head>
-<body class="bg-[#050505] text-white font-sans h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-[#050505] text-white font-sans min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- Logo Principal -->
-    <div class="mb-8 text-xl font-bold flex items-center gap-2 select-none">
+    <div class="mb-8 mt-10 text-xl font-bold flex items-center gap-2 select-none">
         <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
             <path d="M9 18V5l12-2v13"></path>
             <circle cx="6" cy="18" r="3"></circle>
@@ -18,51 +27,59 @@
         <span class="text-2xl">Muxicos</span>
     </div>
 
-    <div class="w-full max-w-[400px] bg-[#121212] p-8 rounded-2xl border border-gray-800 shadow-2xl">
-        <h1 class="text-2xl font-bold text-center mb-8">Iniciar sesión</h1>
+    <div class="w-full max-w-[400px] bg-[#121212] p-8 rounded-2xl border border-gray-800 shadow-2xl relative mb-10">
+        
+        <h1 class="text-2xl font-bold text-center mb-6">Iniciar sesión</h1>
 
-        <!-- BLOQUE DE ALERTAS (FLASH MESSAGES) -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
+                <div class="mb-6 space-y-2">
                 {% for category, message in messages %}
-                    <div class="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg relative mb-6 text-xs text-center">
-                        <span class="block sm:inline font-medium">{{ message }}</span>
+                    <div class="flex items-start gap-3 p-3 rounded-lg bg-red-500/10 border border-red-500/50 text-red-200 text-xs font-bold animate-pulse">
+                        <svg class="w-4 h-4 flex-shrink-0 fill-current text-red-500 mt-0.5" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/></svg>
+                        <span>{{ message }}</span>
                     </div>
                 {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
         
         <div class="space-y-3">
-            <!-- Botón Google -->
-            <button class="w-full bg-black hover:bg-[#1a1a1a] border border-gray-700 text-white py-3 rounded-lg flex items-center justify-center gap-3 transition font-bold text-sm">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="w-5 h-5" alt="Google">
+            <button class="w-full bg-black hover:bg-[#1a1a1a] border border-gray-700 text-white py-3 rounded-lg flex items-center justify-center gap-3 transition font-bold text-sm group">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="w-5 h-5 grayscale group-hover:grayscale-0 transition" alt="Google">
                 Continuar con Google
             </button>
             
-            <!-- Botón Microsoft (Nuevo) -->
-            <button class="w-full bg-black hover:bg-[#1a1a1a] border border-gray-700 text-white py-3 rounded-lg flex items-center justify-center gap-3 transition font-bold text-sm">
+            <button class="w-full bg-black hover:bg-[#1a1a1a] border border-gray-700 text-white py-3 rounded-lg flex items-center justify-center gap-3 transition font-bold text-sm group">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" class="w-5 h-5" alt="Microsoft">
                 Continuar con Microsoft
             </button>
             
-            <!-- Separador -->
             <div class="flex items-center gap-4 py-4">
                 <div class="h-px bg-gray-800 flex-1"></div>
-                <div class="w-2 h-2 rounded-full border border-gray-600"></div>
+                <span class="text-xs text-gray-600 font-bold uppercase">O con email</span>
                 <div class="h-px bg-gray-800 flex-1"></div>
             </div>
 
-            <!-- FORMULARIO -->
             <form class="space-y-5" action="/iniciar-sesion" method="POST">
+                
                 <div>
                     <label class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Email o usuario</label>
                     <input type="email" name="email" required placeholder="ejemplo@muxicos.com" 
-                           class="w-full bg-[#0a0a0a] border border-gray-700 p-3 rounded-lg text-white text-sm focus:border-white focus:ring-1 focus:ring-white outline-none transition placeholder-gray-600">
+                           class="w-full bg-[#0a0a0a] border border-gray-700 p-3 rounded-lg text-white text-sm focus:border-green-500 focus:outline-none transition placeholder-gray-600">
                 </div>
+
                 <div>
                     <label class="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Contraseña</label>
-                    <input type="password" name="password" required placeholder="Contraseña" 
-                           class="w-full bg-[#0a0a0a] border border-gray-700 p-3 rounded-lg text-white text-sm focus:border-white focus:ring-1 focus:ring-white outline-none transition placeholder-gray-600">
+                    <div class="relative">
+                        <input type="password" id="passwordInput" name="password" required placeholder="••••••••" 
+                               class="w-full bg-[#0a0a0a] border border-gray-700 p-3 pr-10 rounded-lg text-white text-sm focus:border-green-500 focus:outline-none transition placeholder-gray-600">
+                        
+                        <button type="button" onclick="togglePassword()" class="absolute right-3 top-3 text-gray-500 hover:text-white transition focus:outline-none p-1">
+                            <svg id="eyeClosed" class="w-5 h-5 block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                            <svg id="eyeOpen" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="w-full bg-[#1ed760] hover:bg-[#1fdf64] hover:scale-[1.02] text-black font-bold py-3.5 rounded-full transition duration-200 mt-2 shadow-lg shadow-green-900/20">
@@ -77,9 +94,27 @@
         </div>
     </div>
     
-    <footer class="mt-12 text-[10px] text-gray-600">
+    <footer class="mt-auto mb-4 text-[10px] text-gray-600">
         © 2025 Muxicos. Todos los derechos reservados.
     </footer>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            const eyeClosed = document.getElementById('eyeClosed');
+            const eyeOpen = document.getElementById('eyeOpen');
+
+            if (input.type === "password") {
+                input.type = "text";
+                eyeClosed.classList.add('hidden');
+                eyeOpen.classList.remove('hidden');
+            } else {
+                input.type = "password";
+                eyeClosed.classList.remove('hidden');
+                eyeOpen.classList.add('hidden');
+            }
+        }
+    </script>
 
 </body>
 </html>

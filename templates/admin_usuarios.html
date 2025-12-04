@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Muxicos Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#121212] text-white font-sans h-screen flex overflow-hidden">
+
+    {% include 'sidebar.html' %}
+
+    <main class="flex-1 overflow-y-auto bg-[#121212] p-8 w-full relative">
+        
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-2xl font-bold flex items-center gap-2">
+                    <span class="text-blue-500">👥</span> Gestión de Usuarios y Roles
+                </h2>
+                <p class="text-gray-400 text-sm mt-1">Administra quién tiene acceso a qué en la plataforma.</p>
+            </div>
+            {% include 'user_menu.html' %}
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-6 p-4 rounded-lg border-l-4 {{ 'bg-green-900/20 border-green-500 text-green-400' if category == 'success' else 'bg-red-900/20 border-red-500 text-red-400' }}">
+                        <p class="font-bold text-sm">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="bg-[#181818] rounded-xl border border-gray-800 overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-400">
+                    <thead class="bg-[#202020] text-gray-200 uppercase font-bold
