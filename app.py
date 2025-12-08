@@ -263,7 +263,7 @@ def iniciar_sesion():
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # Obtenemos datos incluyendo las columnas de seguridad
+
         cur.execute("""
             SELECT password_hash, nombre, apellido, username, instrumento, 
                    telefono, foto_url, rol, intentos_fallidos, bloqueo_hasta 
@@ -272,18 +272,17 @@ def iniciar_sesion():
         
         user = cur.fetchone()
 
-        # 1. Si el usuario NO existe
+
         if user is None:
             cur.close()
             conn.close()
             flash('El correo ingresado no está registrado.', 'error')
             return redirect('/login.html')
 
-        # Desempaquetar datos (Ojo con el orden, debe coincidir con el SELECT)
+
         (pwd_hash, nombre, apellido, username, instrumento, 
          tel, foto, rol, intentos, bloqueo_hasta) = user
 
-        # 2. VERIFICAR SI ESTÁ BLOQUEADO POR TIEMPO
         if bloqueo_hasta and datetime.now() < bloqueo_hasta:
             tiempo_restante = (bloqueo_hasta - datetime.now()).seconds
             cur.close()
@@ -291,9 +290,9 @@ def iniciar_sesion():
             flash(f'Cuenta bloqueada temporalmente. Intenta en {tiempo_restante} segundos.', 'error')
             return redirect('/login.html')
 
-        # 3. VERIFICAR CONTRASEÑA
+
         if pbkdf2_sha256.verify(password, pwd_hash):
-            # --- ÉXITO: Reseteamos contadores a 0 ---
+
             cur.execute("""
                 UPDATE usuarios_v5 SET intentos_fallidos = 0, bloqueo_hasta = NULL 
                 WHERE email = %s
@@ -309,13 +308,13 @@ def iniciar_sesion():
             conn.close()
             return redirect('/') 
         else:
-            # --- FALLO: Aumentamos contador ---
+
             nuevos_intentos = (intentos or 0) + 1
             msg_error = 'Contraseña incorrecta.'
             
-            # REGLA DE NEGOCIO: 3 Intentos = Bloqueo
+
             if nuevos_intentos >= 3:
-                # BLOQUEAR POR 60 SEGUNDOS
+
                 tiempo_bloqueo = datetime.now() + timedelta(seconds=60)
                 cur.execute("""
                     UPDATE usuarios_v5 SET intentos_fallidos = %s, bloqueo_hasta = %s 
@@ -323,7 +322,7 @@ def iniciar_sesion():
                 """, (nuevos_intentos, tiempo_bloqueo, email))
                 msg_error = 'Has excedido los intentos. Cuenta bloqueada por 60s.'
             else:
-                # Solo aumentar contador
+
                 cur.execute("""
                     UPDATE usuarios_v5 SET intentos_fallidos = %s 
                     WHERE email = %s
